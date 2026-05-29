@@ -1,8 +1,8 @@
 """
 Configurable ILS fallback matrix (JD-derived estimate).
 
-Full JFS (job-fit score) and manual ILS research sessions are out of scope.
-This module implements the formula layer only — see docs/ILS_MATRIX.md.
+Manual ILS research sessions are out of scope for this bundle.
+This module implements the formula layer only — see docs/ils-matrix.md.
 """
 
 from __future__ import annotations
@@ -64,7 +64,7 @@ def load_ils_matrix() -> dict[str, Any]:
 
 
 def compute_travel_penalty(d: str) -> tuple[int, str]:
-    """Map stated travel % to ILS deduction (0–28). See docs/ILS_MATRIX.md."""
+    """Map stated travel % to ILS deduction (0–28). See docs/ils-matrix.md."""
     if not d:
         return 0, ""
 

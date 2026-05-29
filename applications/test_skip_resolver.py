@@ -137,7 +137,7 @@ def test_rebootstrap_from_profile_uses_active_profile_paths(
     profile_path.write_text(
         f"paths:\n"
         f"  skip_companies: {empty_skip}\n"
-        f"  application_index: {_REPO / 'config/application_index.html.example'}\n",
+        f"  application_index: {_REPO / 'config/application_index.test.html'}\n",
         encoding="utf-8",
     )
 

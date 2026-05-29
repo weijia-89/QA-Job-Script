@@ -20,7 +20,7 @@ When `--ils-floor` is enabled, rows below the effective floor are skipped after 
    - `company_or_jd_head` — company substring and/or early-JD keyword
 2. **JD-derived fallback** — D1–D5 formula from `config/ils_matrix.yaml` (`jobspy/ils_matrix.jd_derived_ils_fallback`)
 
-See [ILS_MATRIX.md](ILS_MATRIX.md) for dimension tuning.
+See [ils-matrix.md](ils-matrix.md) for dimension tuning.
 
 ## Referral-aware floors
 
@@ -28,4 +28,4 @@ See [ILS_MATRIX.md](ILS_MATRIX.md) for dimension tuning.
 
 ## Out of scope
 
-Full JFS, pre_assessment authoring, and calibrated employer research live outside this bundle.
+Full manual ILS research sessions, pre_assessment authoring, and calibrated employer research live outside this bundle.

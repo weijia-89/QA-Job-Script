@@ -4,8 +4,8 @@ This bundle can estimate an **Interview Likelihood Score (ILS)** from the job de
 
 ## What this is not
 
-- **Not JFS (job-fit score)** — happiness / tailoring depth; manual research.
-- **Not a full ILS session** — calibrated 0–100 with structural caps, D9/D10, and employer-specific nuance.
+- **Not a full manual ILS research session** — calibrated 0–100 with structural caps, D9/D10, and employer-specific nuance.
+- **Not happiness / tailoring-depth scoring** — that kind of manual research is out of bundle scope.
 - **Not legal or hiring advice** — a sorting aid for your own pipeline.
 
 ## What it is
@@ -51,4 +51,4 @@ With arrangement + ILS floor (uses your matrix + profile):
 python3 scripts/triage_jobspy_csv.py --latest --ils-floor 45
 ```
 
-For estimate vs full-research scope and override kinds, see [reference_ils_scoring_model.md](reference_ils_scoring_model.md).
+For estimate vs full-research scope and override kinds, see [reference-ils-scoring-model.md](reference-ils-scoring-model.md).

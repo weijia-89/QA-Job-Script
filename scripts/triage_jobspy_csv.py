@@ -450,7 +450,7 @@ def _normalize_jd_for_scoring(desc: object) -> str:
 
 def estimate_ils(row: pd.Series) -> tuple[int, str]:
     """
-    Conservative ILS point estimate (0–100 scale per docs/reference_ils_scoring_model.md).
+    Conservative ILS point estimate (0–100 scale per docs/reference-ils-scoring-model.md).
     Not a substitute for a full scored session — used only for the <45 skip gate.
 
     Lookup order:

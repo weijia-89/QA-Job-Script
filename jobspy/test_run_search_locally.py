@@ -176,12 +176,12 @@ def test_has_title_blocker_negative(title: str) -> None:
 
 @pytest.mark.parametrize("mn,mx,expected", [
     (None, None, True),       # both unlisted: pass
-    (130_000, 160_000, True),  # ceiling >= 130k
-    (110_000, None, True),     # floor >= 110k (ceiling unlisted)
-    (None, 130_000, True),     # ceiling >= 130k
-    (None, 129_000, False),    # ceiling below 130k AND no floor anchor
-    (109_000, 119_000, False),  # floor < 110k AND ceiling < 130k
-    (110_000, 119_000, True),  # floor >= 110k branch
+    (125_000, 160_000, True),  # ceiling >= profile min_ceiling_usd (125k fixture)
+    (105_000, None, True),     # floor >= profile min_floor_usd (105k fixture)
+    (None, 125_000, True),     # ceiling >= 125k
+    (None, 124_000, False),    # ceiling below 125k AND no floor anchor
+    (104_000, 119_000, False),  # floor < 105k AND ceiling < 125k
+    (105_000, 119_000, True),  # floor >= 105k branch
     (80_000, 99_000, False),
     ("nan", "nan", True),       # NaN-string treated as unlisted
 ])
@@ -275,18 +275,18 @@ def test_geo_jd_canada_only_drops() -> None:
     assert rsl.passes_wei_geo_and_work_mode(desc, "Remote, Canada") is False
 
 
-def test_geo_jd_hybrid_atl_passes() -> None:
+def test_geo_jd_hybrid_home_metro_passes() -> None:
     desc = "Hybrid 3 days per week in office."
-    assert rsl.passes_wei_geo_and_work_mode(desc, "Atlanta, GA") is True
+    assert rsl.passes_wei_geo_and_work_mode(desc, "Portland, OR") is True
 
 
-def test_geo_jd_hybrid_non_atl_drops() -> None:
+def test_geo_jd_hybrid_non_home_metro_drops() -> None:
     desc = "Hybrid 3 days per week in office."
     assert rsl.passes_wei_geo_and_work_mode(desc, "Philadelphia, PA") is False
 
 
 def test_geo_silent_jd_office_hub_drops() -> None:
-    # JD doesn't mention remote, location is a non-ATL hub → drop
+    # JD doesn't mention remote, location is a non-home hub → drop
     desc = "We are looking for an experienced Quality Engineer to join our team."
     assert rsl.passes_wei_geo_and_work_mode(desc, "Irving, TX") is False
 
@@ -389,10 +389,10 @@ def test_fixC_nonempty_loc_remote_us_kept() -> None:
     assert rsl.passes_wei_geo_and_work_mode(desc, "Remote, US") is True
 
 
-def test_fixC_atlanta_hybrid_kept() -> None:
-    """Regression: Atlanta hybrid still passes the ATL allowlist."""
-    desc = "Hybrid role: 3 days/week in our Atlanta office."
-    assert rsl.passes_wei_geo_and_work_mode(desc, "Atlanta, GA") is True
+def test_fixC_home_metro_hybrid_kept() -> None:
+    """Regression: home-metro hybrid still passes the profile allowlist."""
+    desc = "Hybrid role: 3 days/week in our Portland office."
+    assert rsl.passes_wei_geo_and_work_mode(desc, "Portland, OR") is True
 
 
 def test_fixC_luma_combined_filter_chain() -> None:

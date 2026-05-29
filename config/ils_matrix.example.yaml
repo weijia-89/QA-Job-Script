@@ -1,6 +1,6 @@
 # Copy to config/ils_matrix.yaml and tune (gitignored).
-# Formula-only ILS estimate for triage post-gates — not full JFS research.
-# Conceptual spec: docs/ILS_MATRIX.md (aligned with Interview Likelihood Score D1–D5).
+# Formula-only ILS estimate for triage post-gates — not a full manual ILS session.
+# Conceptual spec: docs/ils-matrix.md (aligned with Interview Likelihood Score D1–D5).
 
 version: 1
 

@@ -14,7 +14,7 @@ No cloud accounts, no telemetry, no hosted services required.
 ## What this does not do
 
 - Write cover letters, resumes, or application packets.
-- Run a full **JFS** (job-fit / happiness) research session.
+- Run a full manual ILS research session or happiness / tailoring-depth scoring.
 - Guarantee interview odds — ILS here is a **formula + optional overrides**, not a calibrated research score.
 - Apply to jobs or log into ATS systems for you.
 
@@ -22,7 +22,7 @@ No cloud accounts, no telemetry, no hosted services required.
 
 ## Quick start
 
-**Fastest path:** run the onboarding script (copies config templates, installs deps, prints next steps).
+**Fastest path:** run the onboarding script (copies config templates, installs deps, prompts you to edit `config/profile.yaml`).
 
 ```bash
 chmod +x scripts/onboard.sh
@@ -31,52 +31,7 @@ chmod +x scripts/onboard.sh
 
 Windows (PowerShell): `.\scripts\onboard.ps1`
 
-### macOS / Linux (manual)
-
-```bash
-cd QA-Job-Script
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-
-cp config/profile.example.yaml config/profile.yaml
-cp config/ils_matrix.example.yaml config/ils_matrix.yaml
-cp config/skip_companies.txt.example applications/skip_companies.txt
-cp config/application_index.html.example applications/application_index.html
-
-python3 jobspy/run_search_locally.py
-
-python3 scripts/triage_jobspy_csv.py --latest --no-post-gates \
-  --out jobspy/results/triage_$(date +%Y%m%d).csv
-```
-
-### Windows (PowerShell)
-
-```powershell
-cd QA-Job-Script
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-
-copy config\profile.example.yaml config\profile.yaml
-copy config\ils_matrix.example.yaml config\ils_matrix.yaml
-copy config\skip_companies.txt.example applications\skip_companies.txt
-copy config\application_index.html.example applications\application_index.html
-
-python jobspy\run_search_locally.py
-
-python scripts\triage_jobspy_csv.py --latest --no-post-gates `
-  --out jobspy\results\triage.csv
-```
-
-### CMD one-liners (no venv)
-
-```cmd
-cd QA-Job-Script
-python -m pip install -r requirements.txt
-copy config\profile.example.yaml config\profile.yaml
-python jobspy\run_search_locally.py
-```
+Manual install and platform-specific steps: [docs/installation.md](docs/installation.md)
 
 ---
 
@@ -116,7 +71,7 @@ alias qa-job='cd /path/to/QA-Job-Script && python3 jobspy/run_search_locally.py'
 
 ## Your profile (`config/profile.yaml`)
 
-Copy from `config/profile.example.yaml`. This file is **gitignored** — it holds *your* geography, pay floors, and stack keywords.
+Copy from `config/profile.example.yaml` (onboarding does this automatically). This file is **gitignored** — it holds *your* geography, pay floors, and stack keywords.
 
 | Section | What you set |
 |---------|----------------|
@@ -129,7 +84,7 @@ Copy from `config/profile.example.yaml`. This file is **gitignored** — it hold
 | `prescreen.priority` | Year caps for HIGH/MOD/LOW priority flags. |
 | `ils` | `cold_floor`, referral deltas, paths to matrix + overrides. |
 | `referrals.status_file` | `company_substring,cold\|warm\|strong` per line. |
-| `paths` | Skip list, application index HTML, results directory, ops rollup dir. |
+| `paths` | Skip list, optional application index HTML, results directory, ops rollup dir. |
 | `tracks.enable` | Subset of `A,B,C,G,R,GH,L,AS` scrape tracks (see `profile.example.yaml`). |
 | `verified_remote_employers` | Bypass arrangement gate when LinkedIn JD is misleading. |
 | `review_companies` | Pass gates but `triage_verdict=review`. |
@@ -148,7 +103,7 @@ Override path: `export QA_JOB_PROFILE=/path/to/profile.yaml`
 
 Copy from `config/ils_matrix.example.yaml`. Controls the **JD-derived** ILS formula (D1–D5, travel bands, score clamp).
 
-See [docs/ILS_MATRIX.md](docs/ILS_MATRIX.md) for dimension meanings and tuning.
+See [docs/ils-matrix.md](docs/ils-matrix.md) for dimension meanings and tuning.
 
 Optional per-company scores: copy `config/company_ils_overrides.example.json` → `config/company_ils_overrides.json`.
 
@@ -170,11 +125,11 @@ python3 scripts/triage_jobspy_csv.py --latest --ils-floor 45
 
 - [ ] Python 3.10+ installed (`python3 --version`)
 - [ ] Virtualenv created and `pip install -r requirements.txt` succeeded
-- [ ] `config/profile.yaml` exists (copied from example and edited)
+- [ ] `config/profile.yaml` exists and is edited for your metro, comp, and stack
 - [ ] `applications/skip_companies.txt` exists (even if empty except comments)
-- [ ] `applications/application_index.html` exists (minimal empty table is fine)
 - [ ] First scrape: `python3 jobspy/run_search_locally.py` writes `jobspy/results/jobspy_results_YYYYMMDD.csv`
 - [ ] Triage: `python3 scripts/triage_jobspy_csv.py --latest --no-post-gates`
+- [ ] (Optional) Application index HTML — see [docs/installation.md](docs/installation.md)
 - [ ] (Optional) Aliases installed via `scripts/install_alias.sh` or `.ps1`
 
 ---
@@ -221,7 +176,7 @@ QA_JOB_PROFILE=config/profile.test.yaml python3 -m pytest -q
 python3 -m py_compile jobspy/run_search_locally.py jobspy/profile_loader.py jobspy/ils_matrix.py
 ```
 
-Tests use `config/profile.test.yaml` (Atlanta metro fixture) via `QA_JOB_PROFILE`.
+Tests use `config/profile.test.yaml` (fictional Portland metro fixture) via `QA_JOB_PROFILE`.
 
 ---
 
@@ -243,4 +198,4 @@ Tests use `config/profile.test.yaml` (Atlanta metro fixture) via `QA_JOB_PROFILE
 
 Extracted from a personal `toren` workflow (2026-05-29). Canonical development may continue upstream; this bundle is the **shareable**, profile-driven variant.
 
-**Not included:** personal skip lists, `ils_overrides.json` from private repos, JFS/pre_assessment authoring, or agent skills for application packets.
+**Not included:** personal skip lists, `ils_overrides.json` from private repos, pre_assessment authoring, or agent skills for application packets.

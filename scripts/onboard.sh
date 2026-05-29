@@ -26,6 +26,37 @@ copy_if_missing() {
   fi
 }
 
+open_profile_for_edit() {
+  local profile="config/profile.yaml"
+  if [[ ! -f "$profile" ]]; then
+    warn "Expected $profile after template copy — create it from config/profile.example.yaml"
+    return
+  fi
+  echo ""
+  echo "  >>> Next step: customize $profile (metro, comp floors, stack keywords, tracks)."
+  if [[ ! -t 0 ]]; then
+    echo "  Non-interactive: edit $profile before your first scrape."
+    return
+  fi
+  read -r -p "Open $profile in your editor now? [Y/n] " ans
+  ans="${ans:-Y}"
+  if [[ ! "$ans" =~ ^[Yy]$ ]]; then
+    echo "  Remember to edit $profile before running the scraper."
+    return
+  fi
+  local ed="${EDITOR:-${VISUAL:-}}"
+  if [[ -n "$ed" ]]; then
+    # shellcheck disable=SC2086
+    $ed "$profile" || true
+  elif command -v nano >/dev/null 2>&1; then
+    nano "$profile" || true
+  elif command -v vim >/dev/null 2>&1; then
+    vim "$profile" || true
+  else
+    echo "  Set EDITOR or open manually: $REPO_ROOT/$profile"
+  fi
+}
+
 step "QA-Job-Script onboarding"
 echo "Repo: $REPO_ROOT"
 
@@ -72,13 +103,15 @@ mkdir -p applications jobspy/results
 copy_if_missing config/profile.example.yaml config/profile.yaml
 copy_if_missing config/ils_matrix.example.yaml config/ils_matrix.yaml
 copy_if_missing config/skip_companies.txt.example applications/skip_companies.txt
-copy_if_missing config/application_index.html.example applications/application_index.html
 
-step "5/5 — Next steps"
-echo "  Edit config/profile.yaml for your metro, comp floors, and stack keywords."
+step "5/5 — Customize profile (required)"
+open_profile_for_edit
+
 echo ""
 echo "  Optional shell aliases:"
 echo "    chmod +x scripts/install_alias.sh && ./scripts/install_alias.sh qa-job"
+echo ""
+echo "  Optional application index (already-applied companies): see docs/installation.md"
 echo ""
 echo "  Dry-run / verify install:"
 echo "    QA_JOB_PROFILE=config/profile.test.yaml python3 -m pytest -q"

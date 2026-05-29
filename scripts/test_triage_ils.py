@@ -91,7 +91,7 @@ def test_triage_review_company_reads_profile_after_reload(
         "review_companies: [newco]\n"
         f"paths:\n"
         f"  skip_companies: {_REPO / 'config/skip_companies.test.txt'}\n"
-        f"  application_index: {_REPO / 'config/application_index.html.example'}\n",
+        f"  application_index: {_REPO / 'config/application_index.test.html'}\n",
         encoding="utf-8",
     )
     monkeypatch.setenv("QA_JOB_PROFILE", str(profile_path))
@@ -117,7 +117,7 @@ def test_reload_runtime_config_picks_up_referral_status_changes(
         f"referrals:\n  status_file: {ref_file}\n"
         f"paths:\n"
         f"  skip_companies: {_REPO / 'config/skip_companies.test.txt'}\n"
-        f"  application_index: {_REPO / 'config/application_index.html.example'}\n",
+        f"  application_index: {_REPO / 'config/application_index.test.html'}\n",
         encoding="utf-8",
     )
     test_profile = str(_REPO / "config" / "profile.test.yaml")

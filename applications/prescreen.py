@@ -31,20 +31,18 @@ Three-layer scoring stack — boundaries are intentional, do not collapse them:
        Scale:  ils_estimate column, integer 0–100.
        Cost:   per-company hardcoded overrides + D1–D5 fallback formula.
        Use:    apply/review/skip gate at threshold ~45.
-       Spec:   docs/reference_ils_scoring_model.md.
+       Spec:   docs/reference-ils-scoring-model.md.
 
-  3. JFS (job-fit score)
-       Stage:  manual research session, post ILS ≥45.
-       Scale:  C1–C7 dimensions, integer 0–100.
-       Cost:   30–60 minutes of human research per role.
-       Use:    happiness predictor; controls how much resume tailoring effort
-               to invest.
-       Spec:   docs/job_fit_score.md (manual research; out of bundle scope).
+  3. Manual employer research (out of bundle)
+       Stage:  human session after ILS estimate looks promising.
+       Scale:  your own notes / calibrated score (not automated here).
+       Cost:   minutes per role.
+       Use:    hiring-manager path, referral quality, tailoring depth.
 
 If you find yourself wanting to "promote" priority into a numeric score, stop —
-that's what triage_jobspy_csv.estimate_ils is for. If you find yourself wanting
-estimate_ils to be more accurate, stop — that's what JFS is for, and JFS is
-deliberately manual. The layers are different costs serving different decisions.
+that's what triage_jobspy_csv.estimate_ils is for. If you need a calibrated
+employer-specific score beyond the formula, do that in a separate manual pass.
+The layers are different costs serving different decisions.
 
 Design decisions:
   - Domain classification is title-first to avoid false positives from

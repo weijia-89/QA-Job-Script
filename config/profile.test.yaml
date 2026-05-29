@@ -1,28 +1,24 @@
-# Pytest fixture profile (Atlanta metro — matches characterization tests).
-owner: test
+# Pytest fixture profile — fictional QA persona (not real personal data).
+owner: qa-fixture
 
 remote_preference: hybrid_home_metro
 
 home_metro:
-  name: Atlanta core
-  zip_anchor: "30317"
+  name: Portland metro (fixture)
+  zip_anchor: "97209"
   place_names:
-    - atlanta
-    - decatur
-    - sandy springs
-    - dunwoody
-    - roswell
-    - marietta
-    - buckhead
-    - east atlanta
-    - reynoldstown
-    - midtown atlanta
-    - grant park
-    - inman park
-    - kirkwood
-    - alpharetta
-    - johns creek
-    - lawrenceville
+    - portland
+    - beaverton
+    - hillsboro
+    - gresham
+    - lake oswego
+    - tigard
+    - tualatin
+    - milwaukie
+    - oregon city
+    - vancouver wa
+    - downtown portland
+    - pearl district
 
 silent_office_hubs:
   - philadelphia
@@ -32,10 +28,10 @@ silent_office_hubs:
   - seattle
 
 comp:
-  min_ceiling_usd: 130000
-  min_floor_usd: 110000
-  hourly_annual_floor_usd: 110000
-  gate2_floor_usd: 145000
+  min_ceiling_usd: 125000
+  min_floor_usd: 105000
+  hourly_annual_floor_usd: 105000
+  gate2_floor_usd: 140000
 
 prescreen:
   stack_keywords:
@@ -54,7 +50,7 @@ referrals:
 
 paths:
   skip_companies: config/skip_companies.test.txt
-  application_index: config/application_index.html.example
+  application_index: config/application_index.test.html
   results_dir: jobspy/results
 
 verified_remote_employers: []

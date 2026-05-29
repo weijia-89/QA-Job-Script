@@ -1,7 +1,7 @@
 """Shared company skip resolution for L1 scrape and L2 triage.
 
 Single source for normalize_company_key, skip-key expansion, prefix-safe matching,
-and staffing-wrapper hint cross-checks. See docs/application_index_company_extraction_contract.md §10.
+and staffing-wrapper hint cross-checks. See docs/application-index-company-extraction-contract.md §10.
 """
 
 from __future__ import annotations

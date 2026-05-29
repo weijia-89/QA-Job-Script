@@ -23,6 +23,31 @@ function Copy-IfMissing([string]$Source, [string]$Dest) {
     }
 }
 
+function Open-ProfileForEdit {
+    $profile = Join-Path $RepoRoot "config\profile.yaml"
+    if (-not (Test-Path -LiteralPath $profile)) {
+        Write-Warning "Expected config\profile.yaml after template copy."
+        return
+    }
+    Write-Host ""
+    Write-Host "  >>> Next step: customize config\profile.yaml (metro, comp floors, stack keywords, tracks)."
+    if ($NonInteractive) {
+        Write-Host "  Non-interactive: edit config\profile.yaml before your first scrape."
+        return
+    }
+    $ans = Read-Host "Open config\profile.yaml in notepad now? [Y/n]"
+    if ($ans -ne "" -and $ans -notmatch "^[Yy]") {
+        Write-Host "  Remember to edit config\profile.yaml before running the scraper."
+        return
+    }
+    try {
+        notepad $profile
+    }
+    catch {
+        Write-Host "  Open manually: $profile"
+    }
+}
+
 Write-Step "QA-Job-Script onboarding"
 Write-Host "Repo: $RepoRoot"
 
@@ -73,13 +98,15 @@ New-Item -ItemType Directory -Force -Path applications, jobspy\results | Out-Nul
 Copy-IfMissing "config\profile.example.yaml" "config\profile.yaml"
 Copy-IfMissing "config\ils_matrix.example.yaml" "config\ils_matrix.yaml"
 Copy-IfMissing "config\skip_companies.txt.example" "applications\skip_companies.txt"
-Copy-IfMissing "config\application_index.html.example" "applications\application_index.html"
 
-Write-Step "5/5 — Next steps"
-Write-Host "  Edit config\profile.yaml for your metro, comp floors, and stack keywords."
+Write-Step "5/5 — Customize profile (required)"
+Open-ProfileForEdit
+
 Write-Host ""
 Write-Host "  Optional PowerShell aliases:"
 Write-Host "    .\scripts\install_alias.ps1 -AliasName qa-job"
+Write-Host ""
+Write-Host "  Optional application index: see docs\installation.md"
 Write-Host ""
 Write-Host "  Dry-run / verify install:"
 Write-Host "    `$env:QA_JOB_PROFILE='config/profile.test.yaml'; python -m pytest -q"

@@ -5,7 +5,7 @@ Regenerates ``jobspy/results/triage_latest_ops.csv`` via
 ``triage_jobspy_csv.py --latest``, emits JSON with verdict counts plus an
 apply-row sample suitable for dashboards.
 
-See ``docs/ops_morning_rollup.md`` for rollup + JSON export examples."""
+See ``docs/ops-morning-rollup.md`` for rollup + JSON export examples."""
 
 from __future__ import annotations
 
