@@ -90,7 +90,7 @@ If you will run search and triage often, you can teach your shell short command 
 
 An **alias** (Mac/Linux Terminal) or **function** (Windows PowerShell) is a nickname your shell expands into the full command. Less typing, fewer “wrong folder” mistakes, and the same pipeline every time.
 
-**You can skip this step.** Keep using the full commands from step 3, or copy them from the **Advanced** section below whenever you need them.
+**You can skip this step.** Keep using the full commands from step 3.
 
 **Mac / Linux:**
 
@@ -119,12 +119,6 @@ After install, `qa-job` runs the scraper and `qa-job-triage` runs triage with `-
 | `applications/skip_companies.txt` | Companies to always ignore (one per line) |
 
 These are **local copies** on your machine, not files tracked in Git. Onboarding (or manual install) creates them from `.example` templates; `.gitignore` keeps them out of version control so personal settings never get pushed to GitHub. Edit them in your editor on this computer. If you use Git, do not `git add` or commit them — even if Git shows them as untracked files.
-
----
-
-## Shell shortcuts (optional)
-
-See **step 4** in [Start here](#start-here-recommended-path). Quick reference: `scripts/install_alias.sh` (Mac/Linux) and `scripts/install_alias.ps1` (Windows). Commands: `qa-job`, `qa-job-triage`.
 
 ---
 
