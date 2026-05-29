@@ -1,18 +1,29 @@
 # Copy to config/profile.yaml and edit (gitignored). Onboarding copies this for you.
-# First-run fields: docs/your-profile.md — full reference in comments below.
+# First-run fields: docs/your-profile.md — run scripts/configure_profile.py to customize interactively.
 
-owner: your-name
+owner: 'Your Name'
 
 remote_preference: hybrid_home_metro  # fully_remote | hybrid_home_metro | any_us_remote
 
 home_metro:
-  name: Your Metro Area
-  zip_anchor: "00000"
+  name: Atlanta, GA
+  zip_anchor: "30317"
   place_names:
-    - Your City
-    - Nearby suburb
+    - atlanta
+    - decatur
+    - sandy springs
+    - marietta
+    - alpharetta
+    - roswell
+    - brookhaven
+    - dunwoody
+    - kirkwood
+    - buckhead
+    - midtown atlanta
+    - east atlanta
 
-# US cities that imply onsite when the JD is silent on remote — review defaults at onboarding.
+# US cities that imply onsite when the JD is silent on remote — review at onboarding.
+# Remove your home metro if local listings get filtered incorrectly.
 silent_office_hubs:
   - philadelphia
   - chicago
@@ -99,4 +110,4 @@ review_companies:
 
 # Tracks: A=general QA, B=automation, C=contract, G=Google, R=Remotive, GH/L/AS=ATS boards
 tracks:
-  enable: [A, B, C, G, R, GH, L, AS]
+  enable: [A, B]

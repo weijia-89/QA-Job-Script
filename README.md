@@ -47,7 +47,7 @@ cd QA-Job-Script
 
 ### 2. Run onboarding (easier default)
 
-Open **Terminal** (Mac: Applications → Utilities → Terminal) or **PowerShell** (Windows: Start menu → search “PowerShell”). Then run the onboarding script. It checks Python, installs dependencies, and copies starter settings. Then it walks you through editing **your** profile.
+Open **Terminal** (Mac: Applications → Utilities → Terminal) or **PowerShell** (Windows: Start menu → search “PowerShell”). Then run the onboarding script. It checks Python, installs dependencies, copies starter settings with sensible defaults, and runs **interactive profile setup** (`scripts/configure_profile.py`) so you rarely need to edit raw YAML on day one.
 
 **Mac / Linux:**
 
@@ -63,7 +63,7 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned   # once, if Windows blocks 
 .\scripts\onboard.ps1
 ```
 
-When onboarding asks you to edit `config/profile.yaml`, that file is where you set your metro area, pay floors, and skills list. Full walkthrough: **[docs/your-profile.md](docs/your-profile.md)**
+Onboarding runs `python3 scripts/configure_profile.py` to set your metro, pay floors, skills list, and tracks. Re-run anytime; edit `config/profile.yaml` directly only if you prefer. Full field reference: **[docs/your-profile.md](docs/your-profile.md)**
 
 **Your settings stay on this computer.** Onboarding copies templates such as `config/profile.yaml`, `config/ils_matrix.yaml`, and `applications/skip_companies.txt` into your project folder. Those paths are listed in `.gitignore`, so Git does not upload them to GitHub. Edit them locally; do not commit pay floors, blocklists, or other personal data to the shared repo.
 

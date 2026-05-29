@@ -26,25 +26,18 @@ copy_if_missing() {
   fi
 }
 
-print_profile_checklist() {
-  local profile_guide="docs/your-profile.md"
-  echo ""
-  echo "  Next: edit config/profile.yaml — onboarding fields only."
-  echo "  Walkthrough: $profile_guide"
-  echo ""
-  echo "  Fill in before first scrape:"
-  echo "    • owner                      — display name (logs only)"
-  echo "    • remote_preference          — fully_remote | hybrid_home_metro | any_us_remote"
-  echo "    • home_metro                 — name, zip_anchor, place_names"
-  echo "    • silent_office_hubs         — skim defaults; remove your home metro if needed"
-  echo "    • comp                       — min_ceiling, min_floor, hourly floor, gate2_floor_usd"
-  echo "    • prescreen.stack_keywords   — tools to count in each posting"
-  echo "    • prescreen.priority         — defaults usually fine (year caps)"
-  echo "    • paths.skip_companies       — copied for you; add blocklist entries as you go"
-  echo "    • tracks.enable              — [A] or [A, B] recommended to start"
-  echo ""
-  echo "  Optional later (see $profile_guide — Later section):"
-  echo "    • referrals, verified_remote_employers, review_companies, application index, ILS"
+run_profile_configure() {
+  local profile="config/profile.yaml"
+  if [[ ! -f "$profile" ]]; then
+    warn "Expected $profile after template copy — create it from config/profile.example.yaml"
+    return 1
+  fi
+  if [[ ! -t 0 ]]; then
+    echo "  Non-interactive: run python3 scripts/configure_profile.py when ready."
+    return 0
+  fi
+  echo "  Starting interactive profile setup (press Enter to keep each default)."
+  python3 scripts/configure_profile.py || warn "configure_profile.py exited with an error"
 }
 
 open_doc() {
@@ -66,27 +59,18 @@ open_doc() {
   fi
 }
 
-open_profile_for_edit() {
+open_profile_optional() {
   local profile="config/profile.yaml"
   local profile_guide="docs/your-profile.md"
-  if [[ ! -f "$profile" ]]; then
-    warn "Expected $profile after template copy — create it from config/profile.example.yaml"
-    return
-  fi
-  print_profile_checklist
   if [[ ! -t 0 ]]; then
-    echo "  Non-interactive: edit $profile and read $profile_guide before your first scrape."
     return
   fi
-  read -r -p "Open the profile walkthrough ($profile_guide) now? [Y/n] " doc_ans
-  doc_ans="${doc_ans:-Y}"
+  read -r -p "Open $profile_guide for reference? [y/N] " doc_ans
   if [[ "$doc_ans" =~ ^[Yy]$ ]]; then
     open_doc "$profile_guide"
   fi
-  read -r -p "Open $profile in your editor now? [Y/n] " ans
-  ans="${ans:-Y}"
+  read -r -p "Open $profile in your editor for fine-tuning? [y/N] " ans
   if [[ ! "$ans" =~ ^[Yy]$ ]]; then
-    echo "  Remember to edit $profile before running the scraper."
     return
   fi
   local ed="${EDITOR:-${VISUAL:-}}"
@@ -161,14 +145,15 @@ echo "  These files stay on your machine; git will not upload them."
 
 step "5/5 — Customize your profile"
 echo "  profile.yaml tells the tool where you live, what pay to require, and which skills to look for."
-open_profile_for_edit
+run_profile_configure
+open_profile_optional
 
 echo ""
 echo "────────────────────────────────────────"
 echo "  Setup complete."
 echo ""
 echo "  Before your first job search:"
-echo "    1. Finish editing config/profile.yaml (guide: docs/your-profile.md)"
+echo "    1. Profile ready in config/profile.yaml (re-run: python3 scripts/configure_profile.py)"
 echo "    2. Run: python3 jobspy/run_search_locally.py"
 echo "    3. Then: python3 scripts/triage_jobspy_csv.py --latest --no-post-gates"
 echo ""

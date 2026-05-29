@@ -23,24 +23,21 @@ function Copy-IfMissing([string]$Source, [string]$Dest) {
     }
 }
 
-function Write-ProfileChecklist {
-    Write-Host ""
-    Write-Host "  Next: edit config\profile.yaml — onboarding fields only."
-    Write-Host "  Walkthrough: docs\your-profile.md"
-    Write-Host ""
-    Write-Host "  Fill in before first scrape:"
-    Write-Host "    • owner                      — display name (logs only)"
-    Write-Host "    • remote_preference          — fully_remote | hybrid_home_metro | any_us_remote"
-    Write-Host "    • home_metro                 — name, zip_anchor, place_names"
-    Write-Host "    • silent_office_hubs         — skim defaults; remove your home metro if needed"
-    Write-Host "    • comp                       — min_ceiling, min_floor, hourly floor, gate2_floor_usd"
-    Write-Host "    • prescreen.stack_keywords   — tools to count in each posting"
-    Write-Host "    • prescreen.priority         — defaults usually fine (year caps)"
-    Write-Host "    • paths.skip_companies       — copied for you; add blocklist entries as you go"
-    Write-Host "    • tracks.enable              — [A] or [A, B] recommended to start"
-    Write-Host ""
-    Write-Host "  Optional later (see docs\your-profile.md — Later section):"
-    Write-Host "    • referrals, verified_remote_employers, review_companies, application index, ILS"
+function Invoke-ProfileConfigure {
+    $profile = Join-Path $RepoRoot "config\profile.yaml"
+    if (-not (Test-Path -LiteralPath $profile)) {
+        Write-Warning "Expected config\profile.yaml after template copy."
+        return
+    }
+    if ($NonInteractive) {
+        Write-Host "  Non-interactive: run python scripts\configure_profile.py when ready."
+        return
+    }
+    Write-Host "  Starting interactive profile setup (press Enter to keep each default)."
+    & python (Join-Path $RepoRoot "scripts\configure_profile.py")
+    if ($LASTEXITCODE -ne 0) {
+        Write-Warning "configure_profile.py exited with code $LASTEXITCODE"
+    }
 }
 
 function Open-Doc {
@@ -57,25 +54,18 @@ function Open-Doc {
     }
 }
 
-function Open-ProfileForEdit {
+function Open-ProfileOptional {
+    if ($NonInteractive) {
+        return
+    }
     $profile = Join-Path $RepoRoot "config\profile.yaml"
     $profileGuide = Join-Path $RepoRoot "docs\your-profile.md"
-    if (-not (Test-Path -LiteralPath $profile)) {
-        Write-Warning "Expected config\profile.yaml after template copy."
-        return
-    }
-    Write-ProfileChecklist
-    if ($NonInteractive) {
-        Write-Host "  Non-interactive: edit config\profile.yaml and read docs\your-profile.md before your first scrape."
-        return
-    }
-    $docAns = Read-Host "Open the profile walkthrough (docs\your-profile.md) now? [Y/n]"
-    if ($docAns -eq "" -or $docAns -match "^[Yy]") {
+    $docAns = Read-Host "Open docs\your-profile.md for reference? [y/N]"
+    if ($docAns -match "^[Yy]") {
         Open-Doc $profileGuide
     }
-    $ans = Read-Host "Open config\profile.yaml in Notepad now? [Y/n]"
-    if ($ans -ne "" -and $ans -notmatch "^[Yy]") {
-        Write-Host "  Remember to edit config\profile.yaml before running the scraper."
+    $ans = Read-Host "Open config\profile.yaml in Notepad for fine-tuning? [y/N]"
+    if ($ans -notmatch "^[Yy]") {
         return
     }
     try {
@@ -150,14 +140,15 @@ Write-Host "  These files stay on your machine; git will not upload them."
 
 Write-Step "5/5 — Customize your profile"
 Write-Host "  profile.yaml tells the tool where you live, what pay to require, and which skills to look for."
-Open-ProfileForEdit
+Invoke-ProfileConfigure
+Open-ProfileOptional
 
 Write-Host ""
 Write-Host "────────────────────────────────────────"
 Write-Host "  Setup complete."
 Write-Host ""
 Write-Host "  Before your first job search:"
-Write-Host "    1. Finish editing config\profile.yaml (guide: docs\your-profile.md)"
+Write-Host "    1. Profile ready in config\profile.yaml (re-run: python scripts\configure_profile.py)"
 Write-Host "    2. Run: python jobspy\run_search_locally.py"
 Write-Host "    3. Then: python scripts\triage_jobspy_csv.py --latest --no-post-gates"
 Write-Host ""
