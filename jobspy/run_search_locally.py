@@ -862,8 +862,8 @@ _BODY_GEO_EU_REMOTE = re.compile(
     r"\b(?:eu|europe)\s*[-–]\s*remote\b|\bremote\s*[-–]\s*(?:eu|europe)\b",
     re.IGNORECASE,
 )
-# LATAM / Latin America hiring-region declaration in JD top — Hyqoo / Truelogic
-# / BairesDev class. Pattern matches "Location: LATAM (Remote)" / "based in
+# LATAM / Latin America hiring-region declaration in JD top — nearshore
+# outsourcing class. Pattern matches "Location: LATAM (Remote)" / "based in
 # Latin America" / "LATAM-Remote". Excludes incidental mentions like "we serve
 # clients in the US, EU, and LATAM" by requiring location-context tokens.
 _BODY_GEO_LATAM = re.compile(

@@ -11,7 +11,7 @@ For how this bundle relates to JobSpy and what it adds on top, see [About JobSpy
 
 ### Public PyPI only (corporate `pip.conf`)
 
-This bundle installs from **https://pypi.org** only. If your employer sets a global pip index (`pip.conf`, `PIP_INDEX_URL`, or an Artifactory mirror such as `artifact.intuit.com`), onboarding and the commands below clear those overrides and pass `--index-url https://pypi.org/simple` so installs do not use a private index.
+This bundle installs from **https://pypi.org** only. If your employer sets a global pip index (`pip.conf`, `PIP_INDEX_URL`, or an Artifactory mirror such as `artifact.corp.example.com`), onboarding and the commands below clear those overrides and pass `--index-url https://pypi.org/simple` so installs do not use a private index.
 
 ---
 

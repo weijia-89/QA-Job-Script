@@ -19,7 +19,7 @@ Scope:
 Side effects on import: run_search_locally.py reads application_index.html and
 auto-merges discovered companies into SKIP_COMPANIES. We do not assert on the
 exact membership of SKIP_COMPANIES here for that reason; we only test that
-known-fixed slugs (intuit, scale ai, etc.) skip correctly.
+known-fixed fictional slugs (acme-corp, zenith-ai, etc.) skip correctly.
 """
 from __future__ import annotations
 
@@ -45,17 +45,16 @@ import run_search_locally as rsl  # noqa: E402
 # ── is_skip_company ───────────────────────────────────────────────────────────
 
 @pytest.mark.parametrize("name", [
-    "Intuit",
-    "intuit",
-    "Intuit Inc.",
-    "Scale AI",
-    "Anduril",
-    "Anduril Industries",
-    "Super.com",
-    "supercom",
-    "snapcommerce",
-    "BairesDev",
-    "Tandym Group",
+    "Acme Corp",
+    "acme-corp",
+    "Acme Corp Inc.",
+    "Zenith AI",
+    "FictoDefense",
+    "FictoDefense Industries",
+    "Example-Shop.com",
+    "exampleshop",
+    "Example Outsourcing LLC",
+    "Example Staffing LLC",
 ])
 def test_skip_company_known_skip(name: str) -> None:
     assert rsl.is_skip_company(name) is True
@@ -73,9 +72,9 @@ def test_skip_company_known_pass(name: str) -> None:
     assert rsl.is_skip_company(name) is False
 
 
-def test_skip_company_peek_exact_only() -> None:
-    # 'peek' is in skip_companies.txt; suffix guard must not match 'checkpoint'.
-    assert rsl.is_skip_company("Peek") is True
+def test_skip_company_faux_exact_only() -> None:
+    # 'faux' is in skip_companies.test.txt; suffix guard must not match 'checkpoint'.
+    assert rsl.is_skip_company("Faux") is True
     assert rsl.is_skip_company("Checkpoint Systems") is False
 
 
@@ -89,21 +88,21 @@ def test_skip_company_andela_not_anderson() -> None:
     rsl.invalidate_default_cache()
 
 
-def test_skip_company_intuit_not_intuitive() -> None:
+def test_skip_company_acme_not_acmechanical() -> None:
     rsl.invalidate_default_cache()
-    assert rsl.is_skip_company("Intuit") is True
-    assert rsl.is_skip_company("Intuitive Surgical") is False
+    assert rsl.is_skip_company("Acme Corp") is True
+    assert rsl.is_skip_company("Acmechanical Systems") is False
 
 
-def test_skip_company_govcio_litify_on_list() -> None:
+def test_skip_company_example_gov_fictolify_on_list() -> None:
     rsl.invalidate_default_cache()
-    assert rsl.is_skip_company("GovCIO") is True
-    assert rsl.is_skip_company("Litify") is True
+    assert rsl.is_skip_company("Example Gov LLC") is True
+    assert rsl.is_skip_company("Fictolify") is True
 
 
-def test_skip_company_dexian_digital_prefix() -> None:
+def test_skip_company_fictexian_digital_prefix() -> None:
     rsl.invalidate_default_cache()
-    assert rsl.is_skip_company("Dexian Digital") is True
+    assert rsl.is_skip_company("Fictexian Digital") is True
 
 
 # ── has_required_signal ───────────────────────────────────────────────────────
@@ -298,12 +297,12 @@ def test_geo_silent_jd_office_hub_drops() -> None:
 
 @pytest.mark.parametrize("raw,expected", [
     ("Acme Corp", "acmecorp"),
-    ("Super.com", "supercom"),
+    ("Example-Shop.com", "exampleshopcom"),
     ("Apex Systems Inc.", "apexsystemsinc"),
     ("Amp Co & Sons", "ampcosons"),       # ampersand stripped
     ("Amp Co &amp; Sons", "ampcosons"),    # html-entity decoded then stripped
     ("US Tech Solutions", "ustechsolutions"),
-    ("BairesDev", "bairesdev"),
+    ("Example Outsourcing LLC", "exampleoutsourcingllc"),
     ("E-IT", "eit"),
     ("",  ""),
     (None, ""),

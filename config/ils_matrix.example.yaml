@@ -63,10 +63,10 @@ dimensions:
       - outstaffer
       - jobot
       - beacon
-      - tandym
+      - example-staffing-llc
       - qat global
       - autonomai
-      - bairesdev
+      - example-outsourcing-llc
       - dataannotation
       - distillery
     staffing_jd_keywords:

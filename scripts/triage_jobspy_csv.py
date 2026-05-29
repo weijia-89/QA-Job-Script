@@ -103,7 +103,7 @@ def _load_referral_status(path: str) -> dict[str, str]:
                 # `company,warm   # note` and have the parser treat the entire
                 # tail (including the '#' and prose) as the status field.
                 # Per the file format, comments are line-level only, but the
-                # inline form is intuitive enough to support defensively.
+                # inline form is straightforward enough to support defensively.
                 if '#' in s:
                     s = s.split('#', 1)[0].rstrip()
                     if not s:

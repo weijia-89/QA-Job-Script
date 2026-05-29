@@ -56,7 +56,7 @@ def test_bootstrap_missing_skip_file_does_not_inject_bundled_slugs(
     apps_dir, skip_path, index_path = empty_bootstrap_dirs
     resolver = SkipResolver.bootstrap(apps_dir, skip_path, index_path)
 
-    for slug in ("intuit", "scale ai", "anduril", "peek"):
+    for slug in ("acme-corp", "zenith-ai", "fictodefense", "faux"):
         assert slug not in resolver.raw_skip_companies
         assert resolver.is_skip_company(slug) is False
 
@@ -79,9 +79,9 @@ def test_bootstrap_loads_skip_file_entries(tmp_path: Path) -> None:
     "company_norm,skip_key,expected",
     [
         ("acmecorp", "acme", True),
-        ("checkpointsystems", "peek", False),
-        ("intuit", "intuit", True),
-        ("intuitivesurgical", "intuit", False),
+        ("checkpointsystems", "faux", False),
+        ("acmecorp", "acme", True),
+        ("acmechanical", "acme", False),
     ],
 )
 def test_company_matches_skip_key_prefix_guard(
@@ -107,7 +107,7 @@ def test_build_normalized_skip_keys_drops_short_entries(
     "raw,expected",
     [
         ("Acme Corp", "acmecorp"),
-        ("Super.com", "supercom"),
+        ("Example-Shop.com", "exampleshopcom"),
         ("", ""),
     ],
 )
@@ -116,9 +116,9 @@ def test_normalize_company_key(raw: str, expected: str) -> None:
 
 
 def test_hint_matches_skip_company_bidirectional_prefix() -> None:
-    resolver = SkipResolver({"intuit", "scale ai"})
-    assert resolver.hint_matches_skip_company_bidirectional("Intuit Inc") is True
-    assert resolver.hint_matches_skip_company_bidirectional("Scale") is True
+    resolver = SkipResolver({"acme-corp", "zenith-ai"})
+    assert resolver.hint_matches_skip_company_bidirectional("Acme Corp Inc") is True
+    assert resolver.hint_matches_skip_company_bidirectional("Zenith") is True
     assert resolver.hint_matches_skip_company_bidirectional("ab") is False
     assert resolver.hint_matches_skip_company_bidirectional("Anthropic") is False
 
@@ -141,15 +141,15 @@ def test_rebootstrap_from_profile_uses_active_profile_paths(
         encoding="utf-8",
     )
 
-    seeded = SkipResolver({"intuit"})
+    seeded = SkipResolver({"acme-corp"})
     install_resolver(seeded)
-    assert get_resolver().is_skip_company("Intuit") is True
+    assert get_resolver().is_skip_company("Acme Corp") is True
 
     try:
         monkeypatch.setenv("QA_JOB_PROFILE", str(profile_path))
         pl.reload_profile()
         rebootstrap_from_profile(str(_REPO / "applications"))
-        assert get_resolver().is_skip_company("Intuit") is False
+        assert get_resolver().is_skip_company("Acme Corp") is False
     finally:
         monkeypatch.setenv("QA_JOB_PROFILE", test_profile)
         pl.reload_profile()

@@ -87,7 +87,7 @@ DOMAIN_INFERENCE_RULES: list[tuple[str, "re.Pattern[str]"]] = [
     ("gambling", re.compile(r"\b(gambling|sportsbook|sports\s+betting|casino|wager|fanduel|draftkings|betmgm)\b", re.IGNORECASE)),
     ("surveillance", re.compile(r"\b(surveillance|session\s+replay|behavioral\s+tracking|user\s+monitoring|fullstory|hotjar|clarity\s+session)\b", re.IGNORECASE)),
     ("weapons", re.compile(r"\b(weapons?\s+systems?|munitions|missile|firearms?\s+manufacturer)\b", re.IGNORECASE)),
-    ("defense", re.compile(r"\b(defense\s+contractor|dod\s+contract|lockheed|raytheon|anduril|palantir\s+defense|northrop)\b", re.IGNORECASE)),
+    ("defense", re.compile(r"\b(defense\s+contractor|dod\s+contract|lockheed|raytheon|northrop)\b", re.IGNORECASE)),
     # T8 — mildly evil + lobbying
     ("adtech", re.compile(r"\b(ad[- ]?tech|programmatic\s+advertising|demand[- ]side\s+platform|dsp|ssp|ad\s+exchange|ad\s+server|behavioral\s+ad)\b", re.IGNORECASE)),
     ("insurance", re.compile(r"\b(insurance\s+(?:carrier|company|broker|underwrit)|p&c\s+insurance|claims\s+management|guidewire|duck\s+creek|origami\s+risk)\b", re.IGNORECASE)),

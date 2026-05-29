@@ -1,14 +1,13 @@
-# Test fixture only — slugs required by jobspy/test_run_search_locally.py (not a personal list).
-intuit
-scale ai
-anduril
-anduril industries
-super.com
-supercom
-snapcommerce
-bairesdev
-tandym group
-peek
-govcio
-litify
-dexian
+# Test fixture only — fictional slugs for skip-list tests (not a personal list).
+acme-corp
+zenith-ai
+fictodefense
+fictodefense industries
+example-shop.com
+exampleshop
+example-outsourcing-llc
+example-staffing-llc
+faux
+example-gov-llc
+fictolify
+fictexian
