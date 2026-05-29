@@ -9,6 +9,11 @@ if (-not $ProfilePath) {
     $ProfilePath = $PROFILE
 }
 
+if ($AliasName -notmatch '^[A-Za-z][A-Za-z0-9_-]*$') {
+    Write-Error "Alias name must match ^[A-Za-z][A-Za-z0-9_-]*$ (got: $AliasName)"
+    exit 1
+}
+
 $Marker = "# QA-Job-Script functions"
 $Block = @"
 

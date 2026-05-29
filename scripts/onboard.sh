@@ -119,11 +119,11 @@ else
   echo "  Non-interactive: skipping venv (run: python3 -m venv .venv)"
 fi
 
-PIP="python3 -m pip"
+PIP_CMD=(python3 -m pip)
 if [[ -f ".venv/bin/activate" ]]; then
   # shellcheck disable=SC1091
   source ".venv/bin/activate"
-  PIP="pip"
+  PIP_CMD=(pip)
   echo "  Activated .venv for the rest of this script"
 fi
 
@@ -131,7 +131,7 @@ step "3/5 — Install required packages"
 echo "  Downloading libraries listed in requirements.txt (JobSpy, YAML, etc.)."
 echo "  Installing from public PyPI (pypi.org), not your employer's private index."
 env -u PIP_INDEX_URL -u PIP_EXTRA_INDEX_URL \
-  $PIP install -r requirements.txt \
+  "${PIP_CMD[@]}" install -r requirements.txt \
   --index-url https://pypi.org/simple \
   --trusted-host pypi.org
 

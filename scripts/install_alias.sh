@@ -6,6 +6,12 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ALIAS_NAME="${1:-qa-job}"
 SHELL_RC="${2:-}"
 
+# Reject metacharacters — alias names are written into shell rc files.
+if [[ ! "$ALIAS_NAME" =~ ^[A-Za-z][A-Za-z0-9_-]*$ ]]; then
+  echo "ERROR: alias name must match ^[A-Za-z][A-Za-z0-9_-]*$ (got: $ALIAS_NAME)" >&2
+  exit 1
+fi
+
 detect_rc() {
   if [[ -n "$SHELL_RC" ]]; then
     echo "$SHELL_RC"

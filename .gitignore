@@ -1,3 +1,5 @@
+.venv/
+.venv-*/
 jobspy/results/*.csv
 jobspy/results/*.log
 jobspy/results/*.json
