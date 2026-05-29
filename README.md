@@ -4,6 +4,22 @@ A **local-only** job search pipeline: scrape listings → filter noise → add p
 
 No cloud accounts, no telemetry, no hosted services required.
 
+## Upstream JobSpy vs this repo
+
+This bundle wraps the open-source [JobSpy library (`python-jobspy`)](https://github.com/cullenwatson/JobSpy) with a **profile-driven** QA/SDET job-search pipeline you run entirely on your machine.
+
+**From JobSpy:** concurrent scraping of Indeed, LinkedIn, Google Jobs, Glassdoor, ZipRecruiter, and other boards; returns raw job rows (title, company, location, description, structured comp when available, job URLs) as a pandas DataFrame you can export to CSV.
+
+**Built on top in this repo:**
+
+- `config/profile.yaml` — your metro, remote/hybrid preference, comp floors, stack keywords, skip paths, scrape tracks
+- L1 filters at scrape time and L2 triage — geo/work-mode gates, comp gates, title-noise drops, blocklisted employers
+- Prescreen columns — `priority`, `stack_hits`, comp extracted from the JD
+- Skip resolver — merges blocklist slugs with companies already in your application index
+- Triage CSV — second pass adds `triage_verdict` (`apply` / `review` / `skip`)
+- Configurable ILS matrix (`config/ils_matrix.yaml`) plus optional per-company overrides (formula estimate for post-gates, not calibrated research)
+- Onboarding scripts (`scripts/onboard.sh` / `.ps1`), shell aliases, pytest fixtures
+
 ## What this does
 
 1. **Search** job boards (Indeed, LinkedIn, Google Jobs, Remotive, Greenhouse, Lever, Ashby) with queries aimed at QA/SDET/eval and related IC roles.
