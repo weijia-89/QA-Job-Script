@@ -7,7 +7,7 @@ Manual setup for macOS, Linux, and Windows. For the fastest path, use the onboar
 
 Onboarding copies config templates, installs dependencies, and prompts you to edit `config/profile.yaml` immediately. See [your-profile.md](your-profile.md) for a field-by-field guide.
 
-This repo layers profile-driven filters, prescreen columns, and triage on top of the upstream [JobSpy library (`python-jobspy`)](https://github.com/cullenwatson/JobSpy); see the [README introduction](../README.md#upstream-jobspy-vs-this-repo) for what the library provides vs what this bundle adds.
+For how this bundle relates to JobSpy and what it adds on top, see [About JobSpy](../README.md#about-jobspy) and [What this project does](../README.md#what-this-project-does) in the README.
 
 ---
 

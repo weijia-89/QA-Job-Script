@@ -6,16 +6,29 @@ This tool runs entirely on your machine. No accounts, no telemetry, no hosted da
 
 ---
 
-## What problem this solves
+## About JobSpy
 
-Job boards are noisy. You might see hundreds of postings that are wrong city, wrong pay, wrong stack, or employers you already applied to. QA-Job-Script:
+This project builds on the open-source [JobSpy library (`python-jobspy`)](https://github.com/cullenwatson/JobSpy). JobSpy pulls postings from boards like Indeed, LinkedIn, Google Jobs, Glassdoor, and ZipRecruiter, and saves them as rows you can export to CSV (title, company, location, description, links). QA-Job-Script adds your profile, filters, and triage on top of that raw scrape.
 
-1. **Searches** major boards (Indeed, LinkedIn, Google Jobs, and others) with queries aimed at QA / SDET / test automation roles.
-2. **Filters** listings that clearly do not match your profile (location, remote rules, pay floors, blocklisted companies).
-3. **Tags** each row with quick signals (stack keywords hit, rough priority, pay extracted from the description).
-4. **Triages** the spreadsheet into apply / review / skip — with an optional scoring step you can turn on later.
+---
 
-It does **not** write cover letters, submit applications, or log into company career sites for you.
+## What this project does
+
+- **Search** major job boards with queries aimed at QA, SDET, and test automation roles (via JobSpy)
+- **Filter** listings that clearly do not match you — wrong geography, remote rules, pay floors, blocklisted employers
+- **Tag** each row with quick signals — stack keywords hit, rough priority, pay parsed from the description
+- **Triage** your spreadsheet into apply, review, or skip, with optional interview-likelihood scoring you can turn on later ([docs/ils-matrix.md](docs/ils-matrix.md))
+- **Profile-driven setup** — `config/profile.yaml` holds your metro, remote preference, pay floors, stack keywords, and which boards to search; onboarding scripts (`scripts/onboard.sh`, `scripts/onboard.ps1`) copy templates and walk you through editing it ([docs/your-profile.md](docs/your-profile.md))
+
+---
+
+## What this project does not do
+
+- Write cover letters, resumes, or application packets
+- Run manual employer research sessions or produce application strategy documents
+- Ship pre-built employer research files or personal skip lists from a private workflow
+- Guarantee interviews — optional ILS is a formula plus your overrides, not a calibrated prediction
+- Apply to jobs or sign into ATS systems for you
 
 ---
 
@@ -72,23 +85,6 @@ Results land in `jobspy/results/` as CSV files you can open in Excel, Google She
 
 ---
 
-## Upstream JobSpy vs this repo
-
-This bundle wraps the open-source [JobSpy library (`python-jobspy`)](https://github.com/cullenwatson/JobSpy).
-
-**JobSpy provides:** scraping from Indeed, LinkedIn, Google Jobs, Glassdoor, ZipRecruiter, and other boards — raw rows (title, company, location, description, links) as data you can save to CSV.
-
-**This repo adds on top:**
-
-- **`config/profile.yaml`** — your metro, remote preference, pay floors, stack keywords, which boards to search
-- **Filters** — drop wrong geography, low pay, title noise, blocklisted employers
-- **Prescreen columns** — `priority`, `stack_hits`, pay parsed from the description
-- **Triage** — second pass labels each row `apply`, `review`, or `skip`
-- **Optional ILS scoring** — configurable “how promising is this posting?” formula ([docs/ils-matrix.md](docs/ils-matrix.md))
-- **Onboarding scripts** — `scripts/onboard.sh` and `scripts/onboard.ps1`
-
----
-
 ## Key settings files (after onboarding)
 
 | File | What it is for |
@@ -136,15 +132,6 @@ Then `qa-job` runs the scraper and `qa-job-triage` runs triage. Details in [docs
 | **Everything says geo or work mode fail** | Widen cities in `home_metro.place_names` or set `remote_preference: any_us_remote` in your profile. |
 | **ILS skips almost everything** | Normal while calibrating — use `--no-post-gates` first, then read [ils-matrix.md](docs/ils-matrix.md) and lower `ils.cold_floor` if needed. |
 | **`PyYAML required` or import errors** | Re-run onboarding step 3, or: `pip install -r requirements.txt` inside your project folder. |
-
----
-
-## What this does not do
-
-- Write cover letters, resumes, or application packets.
-- Run a full manual employer research session.
-- Guarantee interviews — optional ILS is a formula plus your overrides, not a calibrated prediction.
-- Apply to jobs or sign into ATS systems for you.
 
 ---
 
@@ -205,5 +192,3 @@ pip install pip-audit && pip-audit -r requirements.txt
 ## Boundary
 
 Extracted from a personal workflow (2026-05-29). This is the **shareable**, profile-driven variant — not a hosted product.
-
-**Not included:** personal skip lists from private repos, pre-built employer research files, or tools that submit applications for you.
