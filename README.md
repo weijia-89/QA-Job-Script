@@ -4,14 +4,14 @@ A **local-only** job search pipeline: scrape listings → filter noise → add p
 
 No cloud accounts, no telemetry, no hosted services required.
 
-## ELI12: what it does
+## What this does
 
 1. **Search** job boards (Indeed, LinkedIn, Google Jobs, Remotive, Greenhouse, Lever, Ashby) with queries aimed at QA/SDET/eval and related IC roles.
 2. **Filter** obvious mismatches (wrong stack, wrong country, low pay, blocklisted employers, title noise).
 3. **Tag** each row with quick signals (`priority`, `stack_hits`, comp extracted from the JD).
 4. **Triage** the CSV again with the same rules plus optional ILS scoring.
 
-## ELI12: what it does **not** do
+## What this does not do
 
 - Write cover letters, resumes, or application packets.
 - Run a full **JFS** (job-fit / happiness) research session.
