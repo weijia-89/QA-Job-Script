@@ -10,7 +10,7 @@ Everything runs **on your computer**. You don't need cloud logins, and the tool 
 
 This project builds on the open-source [JobSpy library (`python-jobspy`)](https://github.com/cullenwatson/JobSpy). JobSpy pulls postings from Indeed, LinkedIn, Google Jobs, Glassdoor, ZipRecruiter, and other boards. Each row exports to CSV (title, company, location, description, plus a link column).
 
-QA-Job-Script wires in your profile and filters, then triages the scrape.
+QA-Job-Script filters out these very long .csv lists based on your preferences so you're not manually sorting through them every time.
 
 ---
 
