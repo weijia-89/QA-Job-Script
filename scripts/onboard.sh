@@ -145,7 +145,11 @@ fi
 
 step "3/5 — Install required packages"
 echo "  Downloading libraries listed in requirements.txt (JobSpy, YAML, etc.)."
-$PIP install -r requirements.txt
+echo "  Installing from public PyPI (pypi.org), not your employer's private index."
+env -u PIP_INDEX_URL -u PIP_EXTRA_INDEX_URL \
+  $PIP install -r requirements.txt \
+  --index-url https://pypi.org/simple \
+  --trusted-host pypi.org
 
 step "4/5 — Copy starter settings (only if missing)"
 echo "  These are your personal config files — never overwritten if they already exist."

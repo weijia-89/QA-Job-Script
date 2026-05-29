@@ -9,6 +9,10 @@ Onboarding copies config templates, installs dependencies, and prompts you to ed
 
 For how this bundle relates to JobSpy and what it adds on top, see [About JobSpy](../README.md#about-jobspy) and [What this project does](../README.md#what-this-project-does) in the README.
 
+### Public PyPI only (corporate `pip.conf`)
+
+This bundle installs from **https://pypi.org** only. If your employer sets a global pip index (`pip.conf`, `PIP_INDEX_URL`, or an Artifactory mirror such as `artifact.intuit.com`), onboarding and the commands below clear those overrides and pass `--index-url https://pypi.org/simple` so installs do not use a private index.
+
 ---
 
 ## macOS / Linux
@@ -17,7 +21,9 @@ For how this bundle relates to JobSpy and what it adds on top, see [About JobSpy
 cd QA-Job-Script
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+env -u PIP_INDEX_URL -u PIP_EXTRA_INDEX_URL pip install -r requirements.txt \
+  --index-url https://pypi.org/simple \
+  --trusted-host pypi.org
 
 cp config/profile.example.yaml config/profile.yaml
 cp config/ils_matrix.example.yaml config/ils_matrix.yaml
@@ -38,7 +44,11 @@ python3 scripts/triage_jobspy_csv.py --latest --no-post-gates \
 cd QA-Job-Script
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+$env:PIP_INDEX_URL = $null
+$env:PIP_EXTRA_INDEX_URL = $null
+pip install -r requirements.txt `
+  --index-url https://pypi.org/simple `
+  --trusted-host pypi.org
 
 copy config\profile.example.yaml config\profile.yaml
 copy config\ils_matrix.example.yaml config\ils_matrix.yaml
@@ -56,7 +66,8 @@ python scripts\triage_jobspy_csv.py --latest --no-post-gates `
 
 ```cmd
 cd QA-Job-Script
-python -m pip install -r requirements.txt
+$env:PIP_INDEX_URL = $null; $env:PIP_EXTRA_INDEX_URL = $null
+python -m pip install -r requirements.txt --index-url https://pypi.org/simple --trusted-host pypi.org
 copy config\profile.example.yaml config\profile.yaml
 python jobspy\run_search_locally.py
 ```

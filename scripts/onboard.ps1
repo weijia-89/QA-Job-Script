@@ -133,7 +133,12 @@ if (Test-Path -LiteralPath $venvActivate) {
 
 Write-Step "3/5 — Install required packages"
 Write-Host "  Downloading libraries listed in requirements.txt (JobSpy, YAML, etc.)."
-& @pip install -r requirements.txt
+Write-Host "  Installing from public PyPI (pypi.org), not your employer's private index."
+Remove-Item Env:PIP_INDEX_URL -ErrorAction SilentlyContinue
+Remove-Item Env:PIP_EXTRA_INDEX_URL -ErrorAction SilentlyContinue
+& @pip install -r requirements.txt `
+  --index-url https://pypi.org/simple `
+  --trusted-host pypi.org
 
 Write-Step "4/5 — Copy starter settings (only if missing)"
 Write-Host "  These are your personal config files — never overwritten if they already exist."

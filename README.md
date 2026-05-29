@@ -130,7 +130,8 @@ Then `qa-job` runs the scraper and `qa-job-triage` runs triage. Details in [docs
 | **Scrape returns zero rows** | Board responses vary by day. Network or rate limits are common; try again later. Some boards throttle automated access. |
 | **Everything says geo or work mode fail** | Widen cities in `home_metro.place_names` or set `remote_preference: any_us_remote` in your profile. |
 | **ILS skips almost everything** | Normal while calibrating. Use `--no-post-gates` first, then read [ils-matrix.md](docs/ils-matrix.md) and lower `ils.cold_floor` if needed. |
-| **`PyYAML required` or import errors** | Re-run onboarding, or: `pip install -r requirements.txt` inside your project folder. |
+| **pip shows `artifact.intuit.com` or another employer index** | Your machine has a corporate pip index in `pip.conf` or env vars. Re-run onboarding (it forces **pypi.org**), or install manually with the flags in [installation.md](docs/installation.md#public-pypi-only-corporate-pipconf). |
+| **`PyYAML required` or import errors** | Re-run onboarding, or install with public PyPI flags from [installation.md](docs/installation.md#public-pypi-only-corporate-pipconf). |
 
 ---
 
