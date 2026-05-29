@@ -71,7 +71,7 @@ Use this path if you want to set everything up by hand, or if the onboarding scr
 
 ### 3. Run your first search and triage
 
-After onboarding, use the shortcuts it mentions, or run the scraper once (this hits the network and can take several minutes):
+Run the scraper once (this hits the network and can take several minutes):
 
 ```bash
 python3 jobspy/run_search_locally.py
@@ -81,6 +81,30 @@ python3 scripts/triage_jobspy_csv.py --latest --no-post-gates
 Results land in `jobspy/results/` as CSV files you can open in Excel, Google Sheets, or Numbers.
 
 **Optional scoring (ILS):** You can ignore this for your first few runs. When you want to understand how “interview likelihood” points work, read **[docs/ils-matrix.md](docs/ils-matrix.md)**. Plain-language guide.
+
+### 4. Optional: install shortcuts (aliases)
+
+If you will run search and triage often, you can teach your shell short command names instead of typing a long `cd` into the project folder plus `python3 ...` every day.
+
+An **alias** (Mac/Linux Terminal) or **function** (Windows PowerShell) is a nickname your shell expands into the full command. Less typing, fewer “wrong folder” mistakes, and the same pipeline every time.
+
+**You can skip this step.** Keep using the full commands from step 3, or copy them from the **Advanced** section below whenever you need them.
+
+**Mac / Linux:**
+
+```bash
+./scripts/install_alias.sh qa-job
+source ~/.zshrc   # or restart Terminal
+```
+
+**Windows (PowerShell):**
+
+```powershell
+.\scripts\install_alias.ps1 -AliasName qa-job
+# restart PowerShell, or run: . $PROFILE
+```
+
+After install, `qa-job` runs the scraper and `qa-job-triage` runs triage with `--no-post-gates`. The default name is `qa-job`; pass a different name to the script if you want your own prefix. More detail: [docs/installation.md](docs/installation.md).
 
 ---
 
@@ -98,13 +122,7 @@ Both YAML files come from `.example` templates. Git does not commit them; they s
 
 ## Shell shortcuts (optional)
 
-After setup, you can install friendly command names so you do not re-type long paths:
-
-**Mac / Linux:** `./scripts/install_alias.sh qa-job` then restart Terminal or run `source ~/.zshrc`
-
-**Windows:** `.\scripts\install_alias.ps1 -AliasName qa-job` then restart PowerShell
-
-Then `qa-job` runs the scraper and `qa-job-triage` runs triage. Details in [docs/installation.md](docs/installation.md).
+See **step 4** in [Start here](#start-here-recommended-path). Quick reference: `scripts/install_alias.sh` (Mac/Linux) and `scripts/install_alias.ps1` (Windows). Commands: `qa-job`, `qa-job-triage`.
 
 ---
 
@@ -115,6 +133,7 @@ Then `qa-job` runs the scraper and `qa-job-triage` runs triage. Details in [docs
 - [ ] `config/profile.yaml` edited for your metro, pay, and stack ([your-profile.md](docs/your-profile.md))
 - [ ] First scrape produced a file under `jobspy/results/`
 - [ ] Triage run with `--no-post-gates` while you are learning
+- [ ] (Optional) Shell shortcuts installed (`qa-job`, `qa-job-triage` via [install_alias scripts](scripts/install_alias.sh))
 - [ ] (Later) Read [ils-matrix.md](docs/ils-matrix.md) if you want scoring gates
 
 ---
