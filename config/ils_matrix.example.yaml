@@ -1,6 +1,5 @@
-# Copy to config/ils_matrix.yaml and tune (gitignored).
-# ILS = Interview Likelihood Score — JD-derived heuristic for triage post-gates only.
-# Full definition, D1–D5 rubric, travel bands, profile mapping: docs/ils-matrix.md
+# Copy to config/ils_matrix.yaml (gitignored). Onboarding copies this for you.
+# Plain-language rubric, travel bands, profile floors: docs/ils-matrix.md
 
 version: 1
 

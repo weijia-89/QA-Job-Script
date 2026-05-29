@@ -29,23 +29,19 @@ copy_if_missing() {
 print_profile_checklist() {
   local profile_guide="docs/your-profile.md"
   echo ""
-  echo "  Profile checklist — edit config/profile.yaml before your first scrape."
-  echo "  Full field guide: $profile_guide"
+  echo "  Next: edit config/profile.yaml — your metro, pay floors, and skills."
+  echo "  Walkthrough: $profile_guide"
   echo ""
-  echo "  Edit now:"
-  echo "    • owner              — label in logs"
-  echo "    • remote_preference  — fully_remote | hybrid_home_metro | any_us_remote"
-  echo "    • home_metro         — name (display), zip_anchor, place_names (matching)"
-  echo "    • silent_office_hubs — review defaults for misleading location columns"
-  echo "    • comp               — min_ceiling_usd, min_floor_usd, gate2_floor_usd"
-  echo "    • prescreen.stack_keywords — tools/skills for stack_hits"
-  echo "    • tracks.enable      — start with [A] if unsure"
+  echo "  Must set before first scrape:"
+  echo "    • owner              — any label for you (logs only)"
+  echo "    • remote_preference  — how strict about remote vs hybrid"
+  echo "    • home_metro         — your area cities and ZIP"
+  echo "    • comp               — minimum pay you will consider"
+  echo "    • prescreen.stack_keywords — tools to count in each posting"
+  echo "    • tracks.enable      — [A] alone is fine to start"
   echo ""
-  echo "  Optional — set later:"
-  echo "    • referrals.status_file      — warm/strong referral map"
-  echo "    • verified_remote_employers  — after you confirm remote employers"
-  echo "    • review_companies           — extra manual review tier"
-  echo "    • paths.application_index    — already-applied HTML export"
+  echo "  Can wait until later:"
+  echo "    • referrals, verified_remote_employers, review_companies, application index"
 }
 
 open_doc() {
@@ -79,7 +75,7 @@ open_profile_for_edit() {
     echo "  Non-interactive: edit $profile and read $profile_guide before your first scrape."
     return
   fi
-  read -r -p "Open $profile_guide now? [Y/n] " doc_ans
+  read -r -p "Open the profile walkthrough ($profile_guide) now? [Y/n] " doc_ans
   doc_ans="${doc_ans:-Y}"
   if [[ "$doc_ans" =~ ^[Yy]$ ]]; then
     open_doc "$profile_guide"
@@ -103,34 +99,37 @@ open_profile_for_edit() {
   fi
 }
 
-step "QA-Job-Script onboarding"
-echo "Repo: $REPO_ROOT"
+step "Welcome — QA-Job-Script setup"
+echo "This script prepares the job-search tool on your computer."
+echo "Repo folder: $REPO_ROOT"
 
-step "1/5 — Python check"
+step "1/5 — Check for Python"
+echo "  Python is the runtime that runs the scraper; we need version 3.10 or newer."
 if ! command -v python3 >/dev/null 2>&1; then
-  warn "python3 not found. Install Python 3.10+ and re-run this script."
+  warn "python3 not found. Install Python 3.10+ (see docs/installation.md) and re-run."
   exit 1
 fi
 PY_VER="$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')"
-echo "  python3 version: $PY_VER"
+echo "  Found python3 version: $PY_VER"
 if ! python3 -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 10) else 1)'; then
   warn "Python 3.10+ recommended (found $PY_VER)."
 fi
 
-step "2/5 — Virtual environment (optional)"
+step "2/5 — Optional isolated environment (.venv)"
+echo "  A virtual environment keeps this project's packages separate from other apps."
 if [[ -d ".venv" ]]; then
-  echo "  .venv already exists"
+  echo "  .venv already exists — skipping create"
 elif [[ -t 0 ]]; then
-  read -r -p "Create .venv here? [Y/n] " ans
+  read -r -p "Create .venv in this folder? [Y/n] " ans
   ans="${ans:-Y}"
   if [[ "$ans" =~ ^[Yy]$ ]]; then
     python3 -m venv .venv
-    echo "  created .venv"
+    echo "  Created .venv"
   else
-    echo "  skipped venv"
+    echo "  Skipped — you can create one later with: python3 -m venv .venv"
   fi
 else
-  echo "  non-interactive: skipping venv (run: python3 -m venv .venv)"
+  echo "  Non-interactive: skipping venv (run: python3 -m venv .venv)"
 fi
 
 PIP="python3 -m pip"
@@ -138,34 +137,39 @@ if [[ -f ".venv/bin/activate" ]]; then
   # shellcheck disable=SC1091
   source ".venv/bin/activate"
   PIP="pip"
-  echo "  activated .venv"
+  echo "  Activated .venv for the rest of this script"
 fi
 
-step "3/5 — Install dependencies"
+step "3/5 — Install required packages"
+echo "  Downloading libraries listed in requirements.txt (JobSpy, YAML, etc.)."
 $PIP install -r requirements.txt
 
-step "4/5 — Copy config templates (only if missing)"
+step "4/5 — Copy starter settings (only if missing)"
+echo "  These are your personal config files — never overwritten if they already exist."
 mkdir -p applications jobspy/results
 copy_if_missing config/profile.example.yaml config/profile.yaml
 copy_if_missing config/ils_matrix.example.yaml config/ils_matrix.yaml
 copy_if_missing config/skip_companies.txt.example applications/skip_companies.txt
-echo "  ILS (Interview Likelihood Score) is optional until you enable triage post-gates."
-echo "  Matrix rubric and profile floors: docs/ils-matrix.md"
 
-step "5/5 — Customize profile (required)"
+step "5/5 — Customize your profile"
+echo "  profile.yaml tells the tool where you live, what pay to require, and which skills to look for."
 open_profile_for_edit
 
 echo ""
-echo "  Profile field guide: docs/your-profile.md"
+echo "────────────────────────────────────────"
+echo "  Setup complete."
 echo ""
-echo "  Optional shell aliases:"
-echo "    chmod +x scripts/install_alias.sh && ./scripts/install_alias.sh qa-job"
+echo "  Before your first job search:"
+echo "    1. Finish editing config/profile.yaml (guide: docs/your-profile.md)"
+echo "    2. Run: python3 jobspy/run_search_locally.py"
+echo "    3. Then: python3 scripts/triage_jobspy_csv.py --latest --no-post-gates"
 echo ""
-echo "  Optional application index (already-applied companies): see docs/installation.md"
+echo "  Optional shortcuts: scripts/install_alias.sh qa-job"
+echo "  More help: docs/installation.md"
 echo ""
-echo "  Dry-run / verify install:"
-echo "    QA_JOB_PROFILE=config/profile.test.yaml python3 -m pytest -q"
-echo "    python3 scripts/triage_jobspy_csv.py --help"
-echo "    python3 jobspy/run_search_locally.py   # first scrape (network; may take minutes)"
+echo "  When you are ready to tune interview-likelihood scoring, read:"
+echo "    docs/ils-matrix.md"
+echo "  (You can ignore that file for your first few runs.)"
+echo "────────────────────────────────────────"
 echo ""
 echo "Done."

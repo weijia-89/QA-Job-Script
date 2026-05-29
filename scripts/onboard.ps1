@@ -25,23 +25,19 @@ function Copy-IfMissing([string]$Source, [string]$Dest) {
 
 function Write-ProfileChecklist {
     Write-Host ""
-    Write-Host "  Profile checklist — edit config\profile.yaml before your first scrape."
-    Write-Host "  Full field guide: docs\your-profile.md"
+    Write-Host "  Next: edit config\profile.yaml — your metro, pay floors, and skills."
+    Write-Host "  Walkthrough: docs\your-profile.md"
     Write-Host ""
-    Write-Host "  Edit now:"
-    Write-Host "    • owner              — label in logs"
-    Write-Host "    • remote_preference  — fully_remote | hybrid_home_metro | any_us_remote"
-    Write-Host "    • home_metro         — name (display), zip_anchor, place_names (matching)"
-    Write-Host "    • silent_office_hubs — review defaults for misleading location columns"
-    Write-Host "    • comp               — min_ceiling_usd, min_floor_usd, gate2_floor_usd"
-    Write-Host "    • prescreen.stack_keywords — tools/skills for stack_hits"
-    Write-Host "    • tracks.enable      — start with [A] if unsure"
+    Write-Host "  Must set before first scrape:"
+    Write-Host "    • owner              — any label for you (logs only)"
+    Write-Host "    • remote_preference  — how strict about remote vs hybrid"
+    Write-Host "    • home_metro         — your area cities and ZIP"
+    Write-Host "    • comp               — minimum pay you will consider"
+    Write-Host "    • prescreen.stack_keywords — tools to count in each posting"
+    Write-Host "    • tracks.enable      — [A] alone is fine to start"
     Write-Host ""
-    Write-Host "  Optional — set later:"
-    Write-Host "    • referrals.status_file      — warm/strong referral map"
-    Write-Host "    • verified_remote_employers  — after you confirm remote employers"
-    Write-Host "    • review_companies           — extra manual review tier"
-    Write-Host "    • paths.application_index    — already-applied HTML export"
+    Write-Host "  Can wait until later:"
+    Write-Host "    • referrals, verified_remote_employers, review_companies, application index"
 }
 
 function Open-Doc {
@@ -70,11 +66,11 @@ function Open-ProfileForEdit {
         Write-Host "  Non-interactive: edit config\profile.yaml and read docs\your-profile.md before your first scrape."
         return
     }
-    $docAns = Read-Host "Open docs\your-profile.md now? [Y/n]"
+    $docAns = Read-Host "Open the profile walkthrough (docs\your-profile.md) now? [Y/n]"
     if ($docAns -eq "" -or $docAns -match "^[Yy]") {
         Open-Doc $profileGuide
     }
-    $ans = Read-Host "Open config\profile.yaml in notepad now? [Y/n]"
+    $ans = Read-Host "Open config\profile.yaml in Notepad now? [Y/n]"
     if ($ans -ne "" -and $ans -notmatch "^[Yy]") {
         Write-Host "  Remember to edit config\profile.yaml before running the scraper."
         return
@@ -87,73 +83,81 @@ function Open-ProfileForEdit {
     }
 }
 
-Write-Step "QA-Job-Script onboarding"
-Write-Host "Repo: $RepoRoot"
+Write-Step "Welcome — QA-Job-Script setup"
+Write-Host "This script prepares the job-search tool on your computer."
+Write-Host "Repo folder: $RepoRoot"
 
-Write-Step "1/5 — Python check"
+Write-Step "1/5 — Check for Python"
+Write-Host "  Python is the runtime that runs the scraper; we need version 3.10 or newer."
 $python = Get-Command python -ErrorAction SilentlyContinue
 if (-not $python) {
-    Write-Warning "python not found. Install Python 3.10+ and re-run."
+    Write-Warning "python not found. Install Python 3.10+ (see docs\installation.md) and re-run."
     exit 1
 }
 $pyVer = & python -c "import sys; print('.'.join(map(str, sys.version_info[:3])))"
-Write-Host "  python version: $pyVer"
+Write-Host "  Found python version: $pyVer"
 & python -c "import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)"
 if ($LASTEXITCODE -ne 0) {
     Write-Warning "Python 3.10+ recommended (found $pyVer)."
 }
 
-Write-Step "2/5 — Virtual environment (optional)"
+Write-Step "2/5 — Optional isolated environment (.venv)"
+Write-Host "  A virtual environment keeps this project's packages separate from other apps."
 $venvActivate = Join-Path $RepoRoot ".venv\Scripts\Activate.ps1"
 if (Test-Path -LiteralPath $venvActivate) {
-    Write-Host "  .venv already exists"
+    Write-Host "  .venv already exists — skipping create"
 }
 elseif (-not $NonInteractive) {
-    $ans = Read-Host "Create .venv here? [Y/n]"
+    $ans = Read-Host "Create .venv in this folder? [Y/n]"
     if ($ans -eq "" -or $ans -match "^[Yy]") {
         & python -m venv .venv
-        Write-Host "  created .venv"
+        Write-Host "  Created .venv"
     }
     else {
-        Write-Host "  skipped venv"
+        Write-Host "  Skipped — you can create one later with: python -m venv .venv"
     }
 }
 else {
-    Write-Host "  non-interactive: skipping venv (run: python -m venv .venv)"
+    Write-Host "  Non-interactive: skipping venv (run: python -m venv .venv)"
 }
 
 $pip = @("python", "-m", "pip")
 if (Test-Path -LiteralPath $venvActivate) {
     . $venvActivate
     $pip = @("pip")
-    Write-Host "  activated .venv"
+    Write-Host "  Activated .venv for the rest of this script"
 }
 
-Write-Step "3/5 — Install dependencies"
+Write-Step "3/5 — Install required packages"
+Write-Host "  Downloading libraries listed in requirements.txt (JobSpy, YAML, etc.)."
 & @pip install -r requirements.txt
 
-Write-Step "4/5 — Copy config templates (only if missing)"
+Write-Step "4/5 — Copy starter settings (only if missing)"
+Write-Host "  These are your personal config files — never overwritten if they already exist."
 New-Item -ItemType Directory -Force -Path applications, jobspy\results | Out-Null
 Copy-IfMissing "config\profile.example.yaml" "config\profile.yaml"
 Copy-IfMissing "config\ils_matrix.example.yaml" "config\ils_matrix.yaml"
 Copy-IfMissing "config\skip_companies.txt.example" "applications\skip_companies.txt"
-Write-Host "  ILS (Interview Likelihood Score) is optional until you enable triage post-gates."
-Write-Host "  Matrix rubric and profile floors: docs/ils-matrix.md"
 
-Write-Step "5/5 — Customize profile (required)"
+Write-Step "5/5 — Customize your profile"
+Write-Host "  profile.yaml tells the tool where you live, what pay to require, and which skills to look for."
 Open-ProfileForEdit
 
 Write-Host ""
-Write-Host "  Profile field guide: docs\your-profile.md"
+Write-Host "────────────────────────────────────────"
+Write-Host "  Setup complete."
 Write-Host ""
-Write-Host "  Optional PowerShell aliases:"
-Write-Host "    .\scripts\install_alias.ps1 -AliasName qa-job"
+Write-Host "  Before your first job search:"
+Write-Host "    1. Finish editing config\profile.yaml (guide: docs\your-profile.md)"
+Write-Host "    2. Run: python jobspy\run_search_locally.py"
+Write-Host "    3. Then: python scripts\triage_jobspy_csv.py --latest --no-post-gates"
 Write-Host ""
-Write-Host "  Optional application index: see docs\installation.md"
+Write-Host "  Optional shortcuts: .\scripts\install_alias.ps1 -AliasName qa-job"
+Write-Host "  More help: docs\installation.md"
 Write-Host ""
-Write-Host "  Dry-run / verify install:"
-Write-Host "    `$env:QA_JOB_PROFILE='config/profile.test.yaml'; python -m pytest -q"
-Write-Host "    python scripts\triage_jobspy_csv.py --help"
-Write-Host "    python jobspy\run_search_locally.py   # first scrape (network; may take minutes)"
+Write-Host "  When you are ready to tune interview-likelihood scoring, read:"
+Write-Host "    docs\ils-matrix.md"
+Write-Host "  (You can ignore that file for your first few runs.)"
+Write-Host "────────────────────────────────────────"
 Write-Host ""
 Write-Host "Done."

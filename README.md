@@ -1,219 +1,209 @@
 # QA-Job-Script
 
-A **local-only** job search pipeline: scrape listings → filter noise → add prescreen columns → triage to apply / review / skip.
+Find QA and SDET job listings on your computer, filter out obvious mismatches, and get a short list worth your time — **without** signing up for cloud services or sending your data anywhere.
 
-No cloud accounts, no telemetry, no hosted services required.
-
-## Upstream JobSpy vs this repo
-
-This bundle wraps the open-source [JobSpy library (`python-jobspy`)](https://github.com/cullenwatson/JobSpy) with a **profile-driven** QA/SDET job-search pipeline you run entirely on your machine.
-
-**From JobSpy:** concurrent scraping of Indeed, LinkedIn, Google Jobs, Glassdoor, ZipRecruiter, and other boards; returns raw job rows (title, company, location, description, structured comp when available, job URLs) as a pandas DataFrame you can export to CSV.
-
-**Built on top in this repo:**
-
-- `config/profile.yaml` — your metro, remote/hybrid preference, comp floors, stack keywords, skip paths, scrape tracks
-- L1 filters at scrape time and L2 triage — geo/work-mode gates, comp gates, title-noise drops, blocklisted employers
-- Prescreen columns — `priority`, `stack_hits`, comp extracted from the JD
-- Skip resolver — merges blocklist slugs with companies already in your application index
-- Triage CSV — second pass adds `triage_verdict` (`apply` / `review` / `skip`)
-- Configurable ILS matrix (`config/ils_matrix.yaml`) plus optional per-company overrides (formula estimate for post-gates, not calibrated research)
-- Onboarding scripts (`scripts/onboard.sh` / `.ps1`), shell aliases, pytest fixtures
-
-## What this does
-
-1. **Search** job boards (Indeed, LinkedIn, Google Jobs, Remotive, Greenhouse, Lever, Ashby) with queries aimed at QA/SDET/eval and related IC roles.
-2. **Filter** obvious mismatches (wrong stack, wrong country, low pay, blocklisted employers, title noise).
-3. **Tag** each row with quick signals (`priority`, `stack_hits`, comp extracted from the JD).
-4. **Triage** the CSV again with the same rules plus optional ILS scoring.
-
-## What this does not do
-
-- Write cover letters, resumes, or application packets.
-- Run a full manual ILS research session or happiness / tailoring-depth scoring.
-- Guarantee interview odds — ILS here is a **formula + optional overrides**, not a calibrated research score.
-- Apply to jobs or log into ATS systems for you.
+This tool runs entirely on your machine. No accounts, no telemetry, no hosted dashboards.
 
 ---
 
-## Quick start
+## What problem this solves
 
-**Fastest path:** run the onboarding script (copies config templates, installs deps, prompts you to edit `config/profile.yaml`).
+Job boards are noisy. You might see hundreds of postings that are wrong city, wrong pay, wrong stack, or employers you already applied to. QA-Job-Script:
+
+1. **Searches** major boards (Indeed, LinkedIn, Google Jobs, and others) with queries aimed at QA / SDET / test automation roles.
+2. **Filters** listings that clearly do not match your profile (location, remote rules, pay floors, blocklisted companies).
+3. **Tags** each row with quick signals (stack keywords hit, rough priority, pay extracted from the description).
+4. **Triages** the spreadsheet into apply / review / skip — with an optional scoring step you can turn on later.
+
+It does **not** write cover letters, submit applications, or log into company career sites for you.
+
+---
+
+## Start here (recommended path)
+
+### 1. Get the project on your computer
+
+If you use Git, clone the repo. If not, download the ZIP from GitHub and unzip it.
+
+```bash
+git clone https://github.com/weijia-89/QA-Job-Script.git
+cd QA-Job-Script
+```
+
+### 2. Open Terminal (Mac) or PowerShell (Windows)
+
+- **Mac:** Terminal is in Applications → Utilities → Terminal. It is a text window where you type commands and press Enter.
+- **Windows:** Open **PowerShell** from the Start menu (search “PowerShell”). Same idea — a window for typed commands.
+
+Step-by-step install details (Python, virtual environment, paths): **[docs/installation.md](docs/installation.md)**
+
+### 3. Run the onboarding script
+
+The onboarding script checks Python, installs what the tool needs, copies starter settings files, and walks you through editing **your** profile.
+
+**Mac / Linux:**
 
 ```bash
 chmod +x scripts/onboard.sh
 ./scripts/onboard.sh
 ```
 
-Windows (PowerShell): `.\scripts\onboard.ps1`
-
-Manual install and platform-specific steps: [docs/installation.md](docs/installation.md)
-
----
-
-## Shell aliases (optional)
-
-After setup, install shortcuts:
-
-**bash / zsh**
-
-```bash
-chmod +x scripts/install_alias.sh
-./scripts/install_alias.sh qa-job
-source ~/.zshrc   # or ~/.bashrc
-qa-job            # run scraper
-qa-job-triage     # pipeline-only triage
-qa-job-triage-ils # triage with ILS + arrangement post-gates
-```
-
-Custom name: `./scripts/install_alias.sh jobspy-qa`
-
-**PowerShell**
+**Windows (PowerShell):**
 
 ```powershell
-Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
-.\scripts\install_alias.ps1 -AliasName qa-job
-. $PROFILE
-qa-job
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned   # once, if Windows blocks scripts
+.\scripts\onboard.ps1
 ```
 
-**Manual alias (bash/zsh)**
+When onboarding asks you to edit `config/profile.yaml`, that file is where you set your metro area, pay floors, and skills list. Full walkthrough: **[docs/your-profile.md](docs/your-profile.md)**
+
+### 4. Run your first search and triage
+
+After onboarding, use the shortcuts it mentions, or run the scraper once (this hits the network and can take several minutes):
 
 ```bash
-alias qa-job='cd /path/to/QA-Job-Script && python3 jobspy/run_search_locally.py'
-```
-
----
-
-## Your profile (`config/profile.yaml`)
-
-Copy from `config/profile.example.yaml` (onboarding does this automatically). This file is **gitignored** — it holds *your* geography, pay floors, and stack keywords.
-
-**Field-by-field guide:** [docs/your-profile.md](docs/your-profile.md) — what each key means, examples, and what to edit at onboarding vs later.
-
-| Section | What you set |
-|---------|----------------|
-| `owner` | Label in logs (any string). |
-| `remote_preference` | `fully_remote`, `hybrid_home_metro`, or `any_us_remote`. |
-| `home_metro` | `name` (display label), `zip_anchor` (home ZIP), `place_names` (substring matching). |
-| `silent_office_hubs` | US office cities in the location column when JD is silent on remote — not a travel ban list. |
-| `comp` | Scrape pay floors plus `gate2_floor_usd` (threshold for legacy `gate2_at_145k` CSV comp flag). |
-| `prescreen.stack_keywords` | Tools/skills counted in `stack_hits`. |
-| `prescreen.priority` | Year caps for HIGH/MOD/LOW review flags (not ILS, not a hire score). |
-| `ils` | `cold_floor`, referral deltas, paths to matrix + overrides. |
-| `referrals.status_file` | `company_substring,warm\|strong` per line (empty file = everyone cold). |
-| `paths` | Skip list, optional application index HTML, results directory, ops rollup dir. |
-| `tracks.enable` | Subset of `A,B,C,G,R,GH,L,AS` scrape tracks — see [your-profile.md](docs/your-profile.md). |
-| `verified_remote_employers` | Bypass arrangement gate when LinkedIn JD is misleading (optional, usually later). |
-| `review_companies` | Pass gates but `triage_verdict=review` (optional, usually later). |
-
-Validate:
-
-```bash
-python3 -c "from jobspy.profile_loader import get_profile; print(get_profile()['_meta']['path'])"
-```
-
-Override path: `export QA_JOB_PROFILE=/path/to/profile.yaml`
-
----
-
-## ILS matrix (`config/ils_matrix.yaml`)
-
-Copy from `config/ils_matrix.example.yaml`. Controls the **JD-derived** ILS formula (D1–D5, travel bands, score clamp).
-
-See [docs/ils-matrix.md](docs/ils-matrix.md) for dimension meanings and tuning.
-
-Optional per-company scores: copy `config/company_ils_overrides.example.json` → `config/company_ils_overrides.json`.
-
-**Pipeline only (default for sharing):**
-
-```bash
+python3 jobspy/run_search_locally.py
 python3 scripts/triage_jobspy_csv.py --latest --no-post-gates
 ```
 
-**With ILS + arrangement post-gates:**
+Results land in `jobspy/results/` as CSV files you can open in Excel, Google Sheets, or Numbers.
 
-```bash
-python3 scripts/triage_jobspy_csv.py --latest --ils-floor 45
-```
+**Optional scoring (ILS):** You can ignore this for your first few runs. When you want to understand how “interview likelihood” points work, read **[docs/ils-matrix.md](docs/ils-matrix.md)** — plain-language guide, not a developer spec.
+
+---
+
+## Upstream JobSpy vs this repo
+
+This bundle wraps the open-source [JobSpy library (`python-jobspy`)](https://github.com/cullenwatson/JobSpy).
+
+**JobSpy provides:** scraping from Indeed, LinkedIn, Google Jobs, Glassdoor, ZipRecruiter, and other boards — raw rows (title, company, location, description, links) as data you can save to CSV.
+
+**This repo adds on top:**
+
+- **`config/profile.yaml`** — your metro, remote preference, pay floors, stack keywords, which boards to search
+- **Filters** — drop wrong geography, low pay, title noise, blocklisted employers
+- **Prescreen columns** — `priority`, `stack_hits`, pay parsed from the description
+- **Triage** — second pass labels each row `apply`, `review`, or `skip`
+- **Optional ILS scoring** — configurable “how promising is this posting?” formula ([docs/ils-matrix.md](docs/ils-matrix.md))
+- **Onboarding scripts** — `scripts/onboard.sh` and `scripts/onboard.ps1`
+
+---
+
+## Key settings files (after onboarding)
+
+| File | What it is for |
+|------|----------------|
+| `config/profile.yaml` | **Start here.** Your geography, pay, skills, referral map. [Guide →](docs/your-profile.md) |
+| `config/ils_matrix.yaml` | Optional rubric for interview-likelihood points. [Guide →](docs/ils-matrix.md) |
+| `applications/skip_companies.txt` | Companies to always ignore (one per line) |
+
+Both YAML files are copied from `.example` templates and are **not** committed to git — they stay on your machine only.
+
+---
+
+## Shell shortcuts (optional)
+
+After setup, you can install friendly command names so you do not re-type long paths:
+
+**Mac / Linux:** `./scripts/install_alias.sh qa-job` then restart Terminal or run `source ~/.zshrc`
+
+**Windows:** `.\scripts\install_alias.ps1 -AliasName qa-job` then restart PowerShell
+
+Then `qa-job` runs the scraper and `qa-job-triage` runs triage. Details in [docs/installation.md](docs/installation.md).
 
 ---
 
 ## First-run checklist
 
-- [ ] Python 3.10+ installed (`python3 --version`)
-- [ ] Virtualenv created and `pip install -r requirements.txt` succeeded
-- [ ] `config/profile.yaml` exists and is edited for your metro, comp, and stack
-- [ ] `applications/skip_companies.txt` exists (even if empty except comments)
-- [ ] First scrape: `python3 jobspy/run_search_locally.py` writes `jobspy/results/jobspy_results_YYYYMMDD.csv`
-- [ ] Triage: `python3 scripts/triage_jobspy_csv.py --latest --no-post-gates`
-- [ ] (Optional) Application index HTML — see [docs/installation.md](docs/installation.md)
-- [ ] (Optional) Aliases installed via `scripts/install_alias.sh` or `.ps1`
+- [ ] Python 3.10+ installed
+- [ ] Onboarding script finished (`./scripts/onboard.sh` or `.\scripts\onboard.ps1`)
+- [ ] `config/profile.yaml` edited for your metro, pay, and stack — [your-profile.md](docs/your-profile.md)
+- [ ] First scrape produced a file under `jobspy/results/`
+- [ ] Triage run with `--no-post-gates` while you are learning
+- [ ] (Later) Read [ils-matrix.md](docs/ils-matrix.md) if you want scoring gates
 
 ---
 
-## Layout
+## Troubleshooting (plain language)
+
+| What you see | What to try |
+|--------------|-------------|
+| **`command not found`** (Mac/Linux) | You may be in the wrong folder — `cd` into the QA-Job-Script folder. Or Python is not installed — see [installation.md](docs/installation.md). |
+| **`python` is not recognized** (Windows) | Install Python from [python.org](https://www.python.org/downloads/) and check “Add Python to PATH” during setup. |
+| **`No profile found`** | Run onboarding again, or copy `config/profile.example.yaml` to `config/profile.yaml`. |
+| **Script blocked on Windows** | In PowerShell: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, then re-run `.\scripts\onboard.ps1`. |
+| **Scrape returns zero rows** | Network or rate limits on job boards — try again later; some boards throttle automated access. |
+| **Everything says geo or work mode fail** | Widen cities in `home_metro.place_names` or set `remote_preference: any_us_remote` in your profile. |
+| **ILS skips almost everything** | Normal while calibrating — use `--no-post-gates` first, then read [ils-matrix.md](docs/ils-matrix.md) and lower `ils.cold_floor` if needed. |
+| **`PyYAML required` or import errors** | Re-run onboarding step 3, or: `pip install -r requirements.txt` inside your project folder. |
+
+---
+
+## What this does not do
+
+- Write cover letters, resumes, or application packets.
+- Run a full manual employer research session.
+- Guarantee interviews — optional ILS is a formula plus your overrides, not a calibrated prediction.
+- Apply to jobs or sign into ATS systems for you.
+
+---
+
+<details>
+<summary><strong>Advanced — power-user commands and layout</strong></summary>
+
+### Validate profile path
+
+```bash
+python3 -c "from jobspy.profile_loader import get_profile; print(get_profile()['_meta']['path'])"
+```
+
+Override: `export QA_JOB_PROFILE=/path/to/profile.yaml`
+
+### Triage with ILS post-gates
+
+```bash
+python3 scripts/triage_jobspy_csv.py --latest --ils-floor 45
+```
+
+Pipeline-only (no ILS skip): `--no-post-gates`
+
+### Per-company score overrides
+
+Copy `config/company_ils_overrides.example.json` → `config/company_ils_overrides.json`
+
+### Repo layout
 
 | Path | Role |
 |------|------|
-| `jobspy/run_search_locally.py` | Daily scrape + L1 filters + prescreen columns |
+| `jobspy/run_search_locally.py` | Daily scrape + filters + prescreen columns |
 | `jobspy/profile_loader.py` | Loads `config/profile.yaml` |
-| `jobspy/paths.py` | Canonical repo path constants |
-| `jobspy/ils_matrix.py` | Loads `config/ils_matrix.yaml` for ILS formula |
-| `applications/prescreen.py` | `stack_hits`, `priority`, `domain`, comp columns |
-| `applications/skip_resolver.py` | Skip list + applied-index slugs |
+| `jobspy/ils_matrix.py` | Loads ILS matrix for formula scoring |
+| `applications/prescreen.py` | `stack_hits`, `priority`, comp columns |
+| `applications/skip_resolver.py` | Skip list + applied-index merge |
 | `scripts/triage_jobspy_csv.py` | Second-pass `triage_verdict` |
-| `config/*.example` | Templates only — no personal data shipped |
 
----
+### ATS company lists
 
-## ATS company lists
+Examples: `config/ats_companies_{ashby,gh,lever}.example.txt`. Override with files under `jobspy/results/`.
 
-Bundled examples: `config/ats_companies_{ashby,gh,lever}.example.txt`.
-
-Override without editing Python:
-
-- `jobspy/results/companies_ashby.txt` (etc.) — replaces bundled list when present
-- `jobspy/results/extra_ashby.txt` — append slugs per run
-
-## Security hygiene
-
-Periodically audit dependencies (optional, local-only):
-
-```bash
-pip install pip-audit
-pip-audit -r requirements.txt
-```
-
-Pin versions in `requirements.txt` when you need reproducible installs; a lockfile is optional for this bundle.
-
-## Tests
+### Tests
 
 ```bash
 QA_JOB_PROFILE=config/profile.test.yaml python3 -m pytest -q
-python3 -m py_compile jobspy/run_search_locally.py jobspy/profile_loader.py jobspy/ils_matrix.py
 ```
 
-Tests use `config/profile.test.yaml` (fictional Portland metro fixture) via `QA_JOB_PROFILE`.
+### Dependency audit (optional)
 
----
+```bash
+pip install pip-audit && pip-audit -r requirements.txt
+```
 
-## Troubleshooting
-
-| Symptom | Likely fix |
-|---------|------------|
-| `No profile found` | `cp config/profile.example.yaml config/profile.yaml` |
-| `PyYAML required` | `pip install pyyaml` |
-| `python-jobspy` import error | `pip install python-jobspy` |
-| Scrape returns 0 rows | Try `hours_old=336` in code or check network; some boards rate-limit |
-| All rows `geo_or_work_mode` fail | Widen `home_metro.place_names` or set `remote_preference: any_us_remote` |
-| ILS skips everything | Lower `ils.cold_floor` or use `--no-post-gates` while calibrating |
-| Skip list ignored | Ensure `paths.skip_companies` points to your `applications/skip_companies.txt` |
+</details>
 
 ---
 
 ## Boundary
 
-Extracted from a personal `toren` workflow (2026-05-29). Canonical development may continue upstream; this bundle is the **shareable**, profile-driven variant.
+Extracted from a personal workflow (2026-05-29). This is the **shareable**, profile-driven variant — not a hosted product.
 
-**Not included:** personal skip lists, `ils_overrides.json` from private repos, pre_assessment authoring, or agent skills for application packets.
+**Not included:** personal skip lists from private repos, pre-built employer research files, or tools that submit applications for you.

@@ -1,52 +1,19 @@
-# Copy to config/profile.yaml and edit (gitignored).
-# Onboarding: ./scripts/onboard.sh copies this file automatically.
-# Field guide: docs/your-profile.md
-# Validate: python3 -c "from jobspy.profile_loader import get_profile; get_profile()"
+# Copy to config/profile.yaml and edit (gitignored). Onboarding copies this for you.
+# Field-by-field guide: docs/your-profile.md
+# Scoring rubric (optional): docs/ils-matrix.md
 
-# ── Identity ──────────────────────────────────────────────────────────────────
-
-# Label in scrape logs / triage output (any string — not sent anywhere).
-# When: onboarding.
-# Example: owner: jordan-qa
 owner: your-name
 
-# ── Work arrangement ──────────────────────────────────────────────────────────
+remote_preference: hybrid_home_metro  # fully_remote | hybrid_home_metro | any_us_remote
 
-# How strictly to filter work arrangement (US-focused pipeline).
-#
-#   fully_remote        — keep rows with clear US-remote language in the JD
-#   hybrid_home_metro   — US-remote OR hybrid/onsite only in home_metro.place_names
-#   any_us_remote       — broadest US filter; still blocks intl location column
-#
-# When: onboarding.
-# Example: remote_preference: fully_remote
-remote_preference: hybrid_home_metro
-
-# home_metro.name — display label only (logs / your reference). NOT used for matching.
-# Matching uses place_names (substring in location + JD) and zip_anchor as your anchor ZIP.
-#
-# When: onboarding.
-# Example (Portland-area hybrid):
-#   home_metro:
-#     name: Portland metro
-#     zip_anchor: "97209"
-#     place_names:
-#       - portland
-#       - beaverton
-#       - hillsboro
 home_metro:
   name: Your Metro Area
-  zip_anchor: "00000"          # Your home-area US ZIP (commute anchor)
+  zip_anchor: "00000"
   place_names:
     - Your City
     - Nearby suburb
-    # Add every city/suburb you would commute to for hybrid days (lowercase)
 
-# silent_office_hubs — US cities in the location column that imply onsite when the JD
-# is silent on remote. Rows dropped in hybrid_home_metro unless JD says remote or
-# location matches your place_names. NOT "cities you refuse to visit" — filters
-# misleading location columns (e.g. "Seattle, WA" with no remote language).
-# When: onboarding — review defaults; remove your home hub if listed.
+# US cities that imply onsite when the JD is silent on remote — review defaults at onboarding.
 silent_office_hubs:
   - philadelphia
   - chicago
@@ -71,40 +38,13 @@ silent_office_hubs:
   - redmond
   - cambridge
 
-# ── Compensation ──────────────────────────────────────────────────────────────
-
-# USD, annualized unless noted.
-#
-# Scraper L1 (comp_ok): pass if max >= min_ceiling_usd OR min >= min_floor_usd.
-# Hourly postings: annualized at 2080 hrs/yr vs hourly_annual_floor_usd.
-#
-# gate2_floor_usd — minimum annual salary for the gate2_at_145k CSV column
-# (legacy column name). Values PASS / MARGINAL / FAIL / UNKNOWN from JD-extracted
-# comp — a triage/comp check flag, NOT a job-fit score.
-#
-# When: onboarding.
-# Example (senior IC QA):
-#   comp:
-#     min_ceiling_usd: 140000
-#     min_floor_usd: 120000
-#     hourly_annual_floor_usd: 120000
-#     gate2_floor_usd: 150000
 comp:
   min_ceiling_usd: 130000
   min_floor_usd: 110000
   hourly_annual_floor_usd: 110000
   gate2_floor_usd: 145000
-  # Optional manual-offer tiers after triage (not used by scraper):
-  # tier_floors:
-  #   "5": 145000
-  #   "7": 150000
-
-# ── Prescreen columns (added during scrape) ───────────────────────────────────
 
 prescreen:
-  # stack_keywords — tools/skills counted in stack_hits (JD description scan).
-  # Use lowercase phrases. GH-track rows often have no description → stack_hits stays 0.
-  # When: onboarding.
   stack_keywords:
     - playwright
     - python
@@ -127,19 +67,12 @@ prescreen:
     - test automation
     - api testing
     - e2e testing
-  # priority — HIGH / MOD / LOW / ? rough flag for manual review priority.
-  # NOT a hire score, NOT ILS. Year caps from title regex.
-  # When: onboarding (defaults usually fine).
   priority:
     max_years_high: 7
     max_years_mod: 8
     max_years_low: 8
 
-# ── ILS triage (optional — post-gate only) ─────────────────────────────────────
-# ILS = Interview Likelihood Score (heuristic). Rubric: docs/ils-matrix.md
-# cold_floor: cold-tier baseline; pass same N as --ils-floor when triaging
-# referral_*_delta: lower skip floor for warm/strong in referrals.status_file
-# matrix_file / company_overrides_file: JD D1–D5 formula + optional employer JSON
+# Optional triage scoring — safe to leave defaults; see docs/ils-matrix.md
 ils:
   cold_floor: 45
   referral_warm_delta: -10
@@ -147,50 +80,21 @@ ils:
   matrix_file: config/ils_matrix.yaml
   company_overrides_file: config/company_ils_overrides.json
 
-# ── Referrals (optional — set later) ──────────────────────────────────────────
-
 referrals:
-  # One line per company: company_substring,warm|strong
-  # Empty file = everyone cold. Example: acme corp,warm
   status_file: applications/referral_status.txt
-
-# ── Paths ─────────────────────────────────────────────────────────────────────
 
 paths:
   skip_companies: applications/skip_companies.txt
-  # Optional: HTML table of companies you already applied to (auto-skip merge).
-  # Omit key for default applications/application_index.html, or leave file missing.
-  # See docs/installation.md § Application index.
   application_index: applications/application_index.html
   results_dir: jobspy/results
   ops_rollup_dir: jobspy/results/ops_rollups
 
-# ── Post-gates / triage overrides (optional — set later) ──────────────────────
-
-# Employers verified as US-remote for you despite weak LinkedIn JD copy.
-# When: after you confirm one good posting from that employer.
-# Example: verified_remote_employers: [example-corp]
 verified_remote_employers: []
 
-# Pass scrape gates but triage_verdict=review (manual tier check before apply).
-# When: after a few triage runs, when you want extra caution on specific employers.
 review_companies:
   - crowdstrike
   - ifit solutions
 
-# ── Scrape tracks ─────────────────────────────────────────────────────────────
-
-# Subset of board/query bundles in run_search_locally.py.
-#   A  — general QA/SDET Indeed + LinkedIn style queries
-#   B  — automation-focused
-#   C  — contract / staff-aug patterns
-#   G  — Google Jobs
-#   R  — Remotive
-#   GH — Greenhouse (config/ats_companies_gh.example.txt)
-#   L  — Lever (config/ats_companies_lever.example.txt)
-#   AS — Ashby (config/ats_companies_ashby.example.txt)
-#
-# When: onboarding — start with [A]; add boards once A looks healthy.
-# Example full sweep: enable: [A, B, C, G, R, GH, L, AS]
+# Tracks: A=general QA, B=automation, C=contract, G=Google, R=Remotive, GH/L/AS=ATS boards
 tracks:
   enable: [A, B, C, G, R, GH, L, AS]
