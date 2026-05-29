@@ -23,17 +23,56 @@ function Copy-IfMissing([string]$Source, [string]$Dest) {
     }
 }
 
+function Write-ProfileChecklist {
+    Write-Host ""
+    Write-Host "  Profile checklist — edit config\profile.yaml before your first scrape."
+    Write-Host "  Full field guide: docs\your-profile.md"
+    Write-Host ""
+    Write-Host "  Edit now:"
+    Write-Host "    • owner              — label in logs"
+    Write-Host "    • remote_preference  — fully_remote | hybrid_home_metro | any_us_remote"
+    Write-Host "    • home_metro         — name (display), zip_anchor, place_names (matching)"
+    Write-Host "    • silent_office_hubs — review defaults for misleading location columns"
+    Write-Host "    • comp               — min_ceiling_usd, min_floor_usd, gate2_floor_usd"
+    Write-Host "    • prescreen.stack_keywords — tools/skills for stack_hits"
+    Write-Host "    • tracks.enable      — start with [A] if unsure"
+    Write-Host ""
+    Write-Host "  Optional — set later:"
+    Write-Host "    • referrals.status_file      — warm/strong referral map"
+    Write-Host "    • verified_remote_employers  — after you confirm remote employers"
+    Write-Host "    • review_companies           — extra manual review tier"
+    Write-Host "    • paths.application_index    — already-applied HTML export"
+}
+
+function Open-Doc {
+    param([string]$DocPath)
+    if (-not (Test-Path -LiteralPath $DocPath)) {
+        Write-Warning "Missing $DocPath"
+        return
+    }
+    try {
+        Start-Process -FilePath $DocPath
+    }
+    catch {
+        Write-Host "  Read: $DocPath"
+    }
+}
+
 function Open-ProfileForEdit {
     $profile = Join-Path $RepoRoot "config\profile.yaml"
+    $profileGuide = Join-Path $RepoRoot "docs\your-profile.md"
     if (-not (Test-Path -LiteralPath $profile)) {
         Write-Warning "Expected config\profile.yaml after template copy."
         return
     }
-    Write-Host ""
-    Write-Host "  >>> Next step: customize config\profile.yaml (metro, comp floors, stack keywords, tracks)."
+    Write-ProfileChecklist
     if ($NonInteractive) {
-        Write-Host "  Non-interactive: edit config\profile.yaml before your first scrape."
+        Write-Host "  Non-interactive: edit config\profile.yaml and read docs\your-profile.md before your first scrape."
         return
+    }
+    $docAns = Read-Host "Open docs\your-profile.md now? [Y/n]"
+    if ($docAns -eq "" -or $docAns -match "^[Yy]") {
+        Open-Doc $profileGuide
     }
     $ans = Read-Host "Open config\profile.yaml in notepad now? [Y/n]"
     if ($ans -ne "" -and $ans -notmatch "^[Yy]") {
@@ -98,10 +137,14 @@ New-Item -ItemType Directory -Force -Path applications, jobspy\results | Out-Nul
 Copy-IfMissing "config\profile.example.yaml" "config\profile.yaml"
 Copy-IfMissing "config\ils_matrix.example.yaml" "config\ils_matrix.yaml"
 Copy-IfMissing "config\skip_companies.txt.example" "applications\skip_companies.txt"
+Write-Host "  ILS (Interview Likelihood Score) is optional until you enable triage post-gates."
+Write-Host "  Matrix rubric and profile floors: docs/ils-matrix.md"
 
 Write-Step "5/5 — Customize profile (required)"
 Open-ProfileForEdit
 
+Write-Host ""
+Write-Host "  Profile field guide: docs\your-profile.md"
 Write-Host ""
 Write-Host "  Optional PowerShell aliases:"
 Write-Host "    .\scripts\install_alias.ps1 -AliasName qa-job"

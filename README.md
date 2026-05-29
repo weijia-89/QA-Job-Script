@@ -89,21 +89,23 @@ alias qa-job='cd /path/to/QA-Job-Script && python3 jobspy/run_search_locally.py'
 
 Copy from `config/profile.example.yaml` (onboarding does this automatically). This file is **gitignored** — it holds *your* geography, pay floors, and stack keywords.
 
+**Field-by-field guide:** [docs/your-profile.md](docs/your-profile.md) — what each key means, examples, and what to edit at onboarding vs later.
+
 | Section | What you set |
 |---------|----------------|
 | `owner` | Label in logs (any string). |
 | `remote_preference` | `fully_remote`, `hybrid_home_metro`, or `any_us_remote`. |
-| `home_metro` | `name`, `zip_anchor`, `place_names` — cities you would commute to for hybrid days. |
-| `silent_office_hubs` | Non-home cities in the location column that imply onsite when the JD is silent. |
-| `comp` | `min_ceiling_usd`, `min_floor_usd`, `hourly_annual_floor_usd`, `gate2_floor_usd`. |
-| `prescreen.stack_keywords` | Words counted in `stack_hits`. |
-| `prescreen.priority` | Year caps for HIGH/MOD/LOW priority flags. |
+| `home_metro` | `name` (display label), `zip_anchor` (home ZIP), `place_names` (substring matching). |
+| `silent_office_hubs` | US office cities in the location column when JD is silent on remote — not a travel ban list. |
+| `comp` | Scrape pay floors plus `gate2_floor_usd` (threshold for legacy `gate2_at_145k` CSV comp flag). |
+| `prescreen.stack_keywords` | Tools/skills counted in `stack_hits`. |
+| `prescreen.priority` | Year caps for HIGH/MOD/LOW review flags (not ILS, not a hire score). |
 | `ils` | `cold_floor`, referral deltas, paths to matrix + overrides. |
-| `referrals.status_file` | `company_substring,cold\|warm\|strong` per line. |
+| `referrals.status_file` | `company_substring,warm\|strong` per line (empty file = everyone cold). |
 | `paths` | Skip list, optional application index HTML, results directory, ops rollup dir. |
-| `tracks.enable` | Subset of `A,B,C,G,R,GH,L,AS` scrape tracks (see `profile.example.yaml`). |
-| `verified_remote_employers` | Bypass arrangement gate when LinkedIn JD is misleading. |
-| `review_companies` | Pass gates but `triage_verdict=review`. |
+| `tracks.enable` | Subset of `A,B,C,G,R,GH,L,AS` scrape tracks — see [your-profile.md](docs/your-profile.md). |
+| `verified_remote_employers` | Bypass arrangement gate when LinkedIn JD is misleading (optional, usually later). |
+| `review_companies` | Pass gates but `triage_verdict=review` (optional, usually later). |
 
 Validate:
 

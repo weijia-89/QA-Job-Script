@@ -26,17 +26,63 @@ copy_if_missing() {
   fi
 }
 
+print_profile_checklist() {
+  local profile_guide="docs/your-profile.md"
+  echo ""
+  echo "  Profile checklist — edit config/profile.yaml before your first scrape."
+  echo "  Full field guide: $profile_guide"
+  echo ""
+  echo "  Edit now:"
+  echo "    • owner              — label in logs"
+  echo "    • remote_preference  — fully_remote | hybrid_home_metro | any_us_remote"
+  echo "    • home_metro         — name (display), zip_anchor, place_names (matching)"
+  echo "    • silent_office_hubs — review defaults for misleading location columns"
+  echo "    • comp               — min_ceiling_usd, min_floor_usd, gate2_floor_usd"
+  echo "    • prescreen.stack_keywords — tools/skills for stack_hits"
+  echo "    • tracks.enable      — start with [A] if unsure"
+  echo ""
+  echo "  Optional — set later:"
+  echo "    • referrals.status_file      — warm/strong referral map"
+  echo "    • verified_remote_employers  — after you confirm remote employers"
+  echo "    • review_companies           — extra manual review tier"
+  echo "    • paths.application_index    — already-applied HTML export"
+}
+
+open_doc() {
+  local doc="$1"
+  if [[ ! -f "$doc" ]]; then
+    warn "Missing $doc"
+    return
+  fi
+  if command -v open >/dev/null 2>&1; then
+    open "$doc" || true
+  else
+    local ed="${EDITOR:-${VISUAL:-}}"
+    if [[ -n "$ed" ]]; then
+      # shellcheck disable=SC2086
+      $ed "$doc" || true
+    else
+      echo "  Read: $REPO_ROOT/$doc"
+    fi
+  fi
+}
+
 open_profile_for_edit() {
   local profile="config/profile.yaml"
+  local profile_guide="docs/your-profile.md"
   if [[ ! -f "$profile" ]]; then
     warn "Expected $profile after template copy — create it from config/profile.example.yaml"
     return
   fi
-  echo ""
-  echo "  >>> Next step: customize $profile (metro, comp floors, stack keywords, tracks)."
+  print_profile_checklist
   if [[ ! -t 0 ]]; then
-    echo "  Non-interactive: edit $profile before your first scrape."
+    echo "  Non-interactive: edit $profile and read $profile_guide before your first scrape."
     return
+  fi
+  read -r -p "Open $profile_guide now? [Y/n] " doc_ans
+  doc_ans="${doc_ans:-Y}"
+  if [[ "$doc_ans" =~ ^[Yy]$ ]]; then
+    open_doc "$profile_guide"
   fi
   read -r -p "Open $profile in your editor now? [Y/n] " ans
   ans="${ans:-Y}"
@@ -103,10 +149,14 @@ mkdir -p applications jobspy/results
 copy_if_missing config/profile.example.yaml config/profile.yaml
 copy_if_missing config/ils_matrix.example.yaml config/ils_matrix.yaml
 copy_if_missing config/skip_companies.txt.example applications/skip_companies.txt
+echo "  ILS (Interview Likelihood Score) is optional until you enable triage post-gates."
+echo "  Matrix rubric and profile floors: docs/ils-matrix.md"
 
 step "5/5 — Customize profile (required)"
 open_profile_for_edit
 
+echo ""
+echo "  Profile field guide: docs/your-profile.md"
 echo ""
 echo "  Optional shell aliases:"
 echo "    chmod +x scripts/install_alias.sh && ./scripts/install_alias.sh qa-job"
