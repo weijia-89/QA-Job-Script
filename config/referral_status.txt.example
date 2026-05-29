@@ -1,0 +1,2 @@
+# company_substring,status   (status: cold | warm | strong)
+# Copy to applications/referral_status.txt if using referral-aware ILS (optional).

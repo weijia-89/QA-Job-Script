@@ -1,0 +1,14 @@
+# Test fixture only — slugs required by jobspy/test_run_search_locally.py (not a personal list).
+intuit
+scale ai
+anduril
+anduril industries
+super.com
+supercom
+snapcommerce
+bairesdev
+tandym group
+peek
+govcio
+litify
+dexian

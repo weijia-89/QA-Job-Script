@@ -1,0 +1,64 @@
+# Pytest fixture profile (Atlanta metro — matches characterization tests).
+owner: test
+
+remote_preference: hybrid_home_metro
+
+home_metro:
+  name: Atlanta core
+  zip_anchor: "30317"
+  place_names:
+    - atlanta
+    - decatur
+    - sandy springs
+    - dunwoody
+    - roswell
+    - marietta
+    - buckhead
+    - east atlanta
+    - reynoldstown
+    - midtown atlanta
+    - grant park
+    - inman park
+    - kirkwood
+    - alpharetta
+    - johns creek
+    - lawrenceville
+
+silent_office_hubs:
+  - philadelphia
+  - irving
+  - chicago
+  - boston
+  - seattle
+
+comp:
+  min_ceiling_usd: 130000
+  min_floor_usd: 110000
+  hourly_annual_floor_usd: 110000
+  gate2_floor_usd: 145000
+
+prescreen:
+  stack_keywords:
+    - playwright
+    - python
+    - pytest
+
+ils:
+  cold_floor: 45
+  referral_warm_delta: -10
+  referral_strong_delta: -20
+  matrix_file: config/ils_matrix.example.yaml
+
+referrals:
+  status_file: config/referral_status.txt.example
+
+paths:
+  skip_companies: config/skip_companies.test.txt
+  application_index: config/application_index.html.example
+  results_dir: jobspy/results
+
+verified_remote_employers: []
+review_companies: []
+
+tracks:
+  enable: [A]

@@ -1,0 +1,110 @@
+# Copy to config/profile.yaml and edit (gitignored).
+# Validate: python3 -c "from jobspy.profile_loader import get_profile; get_profile()"
+
+owner: your-name
+
+# fully_remote        — keep only listings with clear US-remote language in the JD
+# hybrid_home_metro   — US-remote OR hybrid/onsite only in home_metro.place_names
+# any_us_remote       — broadest US filter; still blocks intl location column
+remote_preference: hybrid_home_metro
+
+home_metro:
+  name: Your Metro Area
+  zip_anchor: "00000"
+  place_names:
+    - Your City
+    - Nearby suburb
+    # Add every city/neighborhood you would commute to for hybrid days
+
+# When the JD is silent on remote but the location column names a non-home hub
+# (and does not say "Remote"), drop the row (hybrid_home_metro mode only).
+silent_office_hubs:
+  - philadelphia
+  - chicago
+  - boston
+  - seattle
+  - denver
+  - austin
+  - san francisco
+  - new york
+  - los angeles
+  - dallas
+  - houston
+  - phoenix
+  - portland
+  - minneapolis
+  - tampa
+  - orlando
+  - pittsburgh
+  - irving
+  - mountain view
+  - sunnyvale
+  - redmond
+  - cambridge
+
+comp:
+  # Scraper comp_ok: pass if max >= ceiling OR min >= floor (USD, annualized).
+  min_ceiling_usd: 130000
+  min_floor_usd: 110000
+  hourly_annual_floor_usd: 110000
+  # Prescreen column gate2_at_floor (PASS/MARGINAL/FAIL on extracted JD comp).
+  gate2_floor_usd: 145000
+  # Optional manual-offer tiers after triage (not used by scraper):
+  # tier_floors:
+  #   "5": 145000
+  #   "7": 150000
+
+prescreen:
+  stack_keywords:
+    - playwright
+    - python
+    - pytest
+    - typescript
+    - javascript
+    - github actions
+    - ci/cd
+    - cicd
+    - rest api
+    - graphql
+    - selenium
+    - docker
+    - sql
+    - golang
+    - llm eval
+    - llm evaluation
+    - ai evaluation
+    - model evaluation
+    - test automation
+    - api testing
+    - e2e testing
+  priority:
+    max_years_high: 7
+    max_years_mod: 8
+    max_years_low: 8
+
+ils:
+  cold_floor: 45
+  referral_warm_delta: -10
+  referral_strong_delta: -20
+  matrix_file: config/ils_matrix.yaml
+  company_overrides_file: config/company_ils_overrides.json
+
+referrals:
+  status_file: applications/referral_status.txt
+
+paths:
+  skip_companies: applications/skip_companies.txt
+  application_index: applications/application_index.html
+  results_dir: jobspy/results
+  ops_rollup_dir: jobspy/results/ops_rollups
+
+# Employers you verified as US-remote despite weak LinkedIn JD copy (post-gates).
+verified_remote_employers: []
+
+# Pass post-gates but triage verdict=review (manual employer tier).
+review_companies:
+  - crowdstrike
+  - ifit solutions
+
+tracks:
+  enable: [A, B, C, G, R, GH, L, AS]

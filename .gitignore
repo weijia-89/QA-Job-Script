@@ -1,0 +1,14 @@
+jobspy/results/*.csv
+jobspy/results/*.log
+jobspy/results/*.json
+!jobspy/results/.gitkeep
+config/profile.yaml
+config/ils_matrix.yaml
+config/company_ils_overrides.json
+applications/skip_companies.txt
+applications/application_index.html
+applications/referral_status.txt
+applications/ils_overrides.json
+__pycache__/
+.pytest_cache/
+*.pyc

@@ -1,0 +1,10 @@
+# Bundled example slugs for lever — copy to jobspy/results/companies_lever.txt
+bluesight
+everbridge
+braze
+flatfile
+cohere
+honeycomb-io
+getsentry
+brex
+ramp

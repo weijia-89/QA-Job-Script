@@ -1,0 +1,110 @@
+# Copy to config/ils_matrix.yaml and tune (gitignored).
+# Formula-only ILS estimate for triage post-gates — not full JFS research.
+# Conceptual spec: docs/ILS_MATRIX.md (aligned with Interview Likelihood Score D1–D5).
+
+version: 1
+
+dimensions:
+  d1_stack_match:
+    max_points: 25
+    base_points: 5
+    points_per_tool_hit: 2
+    tools:
+      - playwright
+      - cypress
+      - selenium
+      - typescript
+      - javascript
+      - python
+      - java
+      - golang
+      - kubernetes
+      - k8s
+      - aws
+      - azure
+      - gcp
+      - ci/cd
+      - pytest
+      - junit
+      - jenkins
+      - github actions
+      - graphql
+      - rest api
+      - appium
+      - postman
+      - docker
+      - terraform
+
+  d2_experience:
+    max_points: 22
+    default_points: 14
+    degree_required_penalty: 3
+    year_tiers:
+      - pattern: '(?:12|15)\s*\+?\s*years|12\+|15\+|15\s+years'
+        points: 9
+      - pattern: '(?:10|11)\s*\+?\s*years|10\+|11\+'
+        points: 11
+      - pattern: '(?:8|9)\s*\+?\s*years|8\+|9\+'
+        points: 13
+      - pattern: '(?:5|6|7)\s*\+?\s*years|5\+|6\+|7\+'
+        points: 16
+
+  d3_domain_bridge:
+    max_points: 20
+    default_points: 12
+    staffing_company_penalty: 5
+    staffing_jd_penalty: 3
+    staffing_jd_scan_chars: 2500
+    nuclear_cap: 7
+    gig_work_penalty: 4
+    gig_work_scan_chars: 1200
+    staffing_company_keywords:
+      - staffing
+      - nearshore
+      - outstaffer
+      - jobot
+      - beacon
+      - tandym
+      - qat global
+      - autonomai
+      - bairesdev
+      - dataannotation
+      - distillery
+    staffing_jd_keywords:
+      - staffing agency
+      - staffing firm
+      - nearshore
+      - body shop
+      - it consulting firm
+      - recruiting firm
+    nuclear_keywords:
+      - nuclear
+      - ap1000
+    gig_work_keywords:
+      - train ai models
+      - label data
+      - evaluate chatbots
+
+  d4_application_method:
+    default_points: 7
+
+  d5_portfolio:
+    default_points: 7
+
+fallback:
+  score_min: 18
+  score_max: 72
+  contract_without_w2_penalty: 4
+
+travel_penalty:
+  bands:
+    - min_percent: 50
+      penalty: 28
+    - min_percent: 40
+      penalty: 22
+    - min_percent: 30
+      penalty: 20
+    - min_percent: 20
+      penalty: 12
+    - min_percent: 11
+      penalty: 7

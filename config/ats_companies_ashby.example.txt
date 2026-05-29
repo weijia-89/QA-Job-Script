@@ -1,0 +1,26 @@
+# Bundled example slugs for ashby — copy to jobspy/results/companies_ashby.txt
+ema
+posthog
+incident
+attio
+hightouch
+mistral
+perplexity
+cognition
+sierra
+luma
+cartesia
+runway-ml
+vanta
+descript
+hex
+modal
+together
+replit
+linear
+wandb
+braintrust
+galileo
+brex
+ramp
+valon

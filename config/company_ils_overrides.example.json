@@ -1,0 +1,25 @@
+{
+  "_comment": "Bundled ILS estimate overrides (copy to config/company_ils_overrides.json to customize). Keys are company_substring matches.",
+  "westinghouse": {
+    "kind": "nuclear_travel",
+    "base_score": 42,
+    "min_score": 12,
+    "note": "nuclear supplier QA"
+  },
+  "conduent": {
+    "kind": "jd_comp_band",
+    "low_band_patterns": ["85,000", "95000", "85000"],
+    "low_score": 41,
+    "low_note": "Listed ~85–95k band in JD; manual+automation mix; cold apply",
+    "default_score": 44,
+    "default_note": "BPO-style services; cold apply"
+  },
+  "doma": {
+    "kind": "company_or_jd_head",
+    "match_company_substring": "doma",
+    "jd_keyword": "commence",
+    "jd_head_chars": 400,
+    "score": 50,
+    "note": "Fed healthcare/CMS + FHIR; QA lead 8–12yr; remote stated"
+  }
+}
