@@ -204,6 +204,16 @@ pip install pip-audit && pip-audit -r requirements.txt
 
 ---
 
+## Documentation and policy
+
+| Doc | Purpose |
+|-----|---------|
+| [CHANGELOG.md](CHANGELOG.md) | Release history and notable changes |
+| [SECURITY.md](SECURITY.md) | Security policy, reporting, and what not to commit |
+| [docs/installation.md](docs/installation.md) | Manual install and public PyPI-only notes |
+
+---
+
 ## Boundary
 
 Extracted from a personal workflow (2026-05-29). This is the **shareable**, profile-driven variant for local use.
