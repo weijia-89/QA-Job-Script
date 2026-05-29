@@ -2,7 +2,7 @@
 
 Find QA and SDET job listings on your computer. Drop obvious mismatches. What's left is a short list worth your time, and nothing leaves your machine unless you export it yourself.
 
-No cloud accounts. No telemetry. No hosted dashboards.
+Everything runs **on your computer**. You don't need cloud logins, and the tool doesn't track you.
 
 ---
 
