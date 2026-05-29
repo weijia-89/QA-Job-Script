@@ -8,9 +8,9 @@ No cloud accounts. No telemetry. No hosted dashboards.
 
 ## About JobSpy
 
-This project builds on the open-source [JobSpy library (`python-jobspy`)](https://github.com/cullenwatson/JobSpy). JobSpy pulls postings from Indeed, LinkedIn, Google Jobs, Glassdoor, ZipRecruiter, and other boards. Each row can export to CSV with title, company, location, description, and links.
+This project builds on the open-source [JobSpy library (`python-jobspy`)](https://github.com/cullenwatson/JobSpy). JobSpy pulls postings from Indeed, LinkedIn, Google Jobs, Glassdoor, ZipRecruiter, and other boards. Each row exports to CSV (title, company, location, description, plus a link column).
 
-QA-Job-Script layers your profile, your filters, and triage on top of that raw scrape.
+QA-Job-Script wires in your profile and filters, then triages the scrape.
 
 ---
 
@@ -19,7 +19,7 @@ QA-Job-Script layers your profile, your filters, and triage on top of that raw s
 - **Search** major job boards with queries aimed at QA, SDET, and test automation roles (via JobSpy)
 - **Filter** listings that do not match you: wrong geography, remote rules, pay floors, blocklisted employers
 - **Tag** each row with quick signals (stack keyword hits, rough priority, pay parsed from the description)
-- **Triage** your spreadsheet into apply, review, or skip. Optional interview-likelihood scoring can wait until you want it ([docs/ils-matrix.md](docs/ils-matrix.md))
+- **Triage** your spreadsheet into apply / review / skip buckets. Optional interview-likelihood scoring can wait until you want it ([docs/ils-matrix.md](docs/ils-matrix.md))
 - **Profile-driven setup:** `config/profile.yaml` holds your metro, remote preference, pay floors, stack keywords, and which boards to search. Onboarding scripts (`scripts/onboard.sh`, `scripts/onboard.ps1`) copy templates and walk you through editing it ([docs/your-profile.md](docs/your-profile.md))
 
 ---
@@ -47,7 +47,7 @@ cd QA-Job-Script
 
 ### 2. Run onboarding (easier default)
 
-Open **Terminal** (Mac: Applications → Utilities → Terminal) or **PowerShell** (Windows: Start menu → search “PowerShell”). Then run the onboarding script — it checks Python, installs dependencies, copies starter settings, and walks you through editing **your** profile.
+Open **Terminal** (Mac: Applications → Utilities → Terminal) or **PowerShell** (Windows: Start menu → search “PowerShell”). Then run the onboarding script. It checks Python, installs dependencies, and copies starter settings. Then it walks you through editing **your** profile.
 
 **Mac / Linux:**
 
@@ -67,7 +67,7 @@ When onboarding asks you to edit `config/profile.yaml`, that file is where you s
 
 ### Manual install (step by step)
 
-Use this path if you want to set everything up by hand, or if the onboarding script fails. Full commands for Python, virtual environments, and config templates: **[docs/installation.md](docs/installation.md)** — or run the onboarding script above instead.
+Use this path if you want to set everything up by hand, or if the onboarding script fails. Full commands for Python, virtual environments, and config templates: **[docs/installation.md](docs/installation.md)**. Or run the onboarding script above instead.
 
 ### 3. Run your first search and triage
 
@@ -127,7 +127,7 @@ Then `qa-job` runs the scraper and `qa-job-triage` runs triage. Details in [docs
 | **`python` is not recognized** (Windows) | Install Python from [python.org](https://www.python.org/downloads/) and check “Add Python to PATH” during setup. |
 | **`No profile found`** | Run onboarding again, or copy `config/profile.example.yaml` to `config/profile.yaml`. |
 | **Script blocked on Windows** | In PowerShell: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, then re-run `.\scripts\onboard.ps1`. |
-| **Scrape returns zero rows** | Network or rate limits on job boards. Try again later; some boards throttle automated access. |
+| **Scrape returns zero rows** | Board responses vary by day. Network or rate limits are common; try again later. Some boards throttle automated access. |
 | **Everything says geo or work mode fail** | Widen cities in `home_metro.place_names` or set `remote_preference: any_us_remote` in your profile. |
 | **ILS skips almost everything** | Normal while calibrating. Use `--no-post-gates` first, then read [ils-matrix.md](docs/ils-matrix.md) and lower `ils.cold_floor` if needed. |
 | **`PyYAML required` or import errors** | Re-run onboarding, or: `pip install -r requirements.txt` inside your project folder. |
