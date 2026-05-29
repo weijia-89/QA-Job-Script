@@ -157,6 +157,7 @@ mkdir -p applications jobspy/results
 copy_if_missing config/profile.example.yaml config/profile.yaml
 copy_if_missing config/ils_matrix.example.yaml config/ils_matrix.yaml
 copy_if_missing config/skip_companies.txt.example applications/skip_companies.txt
+echo "  These files stay on your machine; git will not upload them."
 
 step "5/5 — Customize your profile"
 echo "  profile.yaml tells the tool where you live, what pay to require, and which skills to look for."

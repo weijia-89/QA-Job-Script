@@ -65,6 +65,8 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned   # once, if Windows blocks 
 
 When onboarding asks you to edit `config/profile.yaml`, that file is where you set your metro area, pay floors, and skills list. Full walkthrough: **[docs/your-profile.md](docs/your-profile.md)**
 
+**Your settings stay on this computer.** Onboarding copies templates such as `config/profile.yaml`, `config/ils_matrix.yaml`, and `applications/skip_companies.txt` into your project folder. Those paths are listed in `.gitignore`, so Git does not upload them to GitHub. Edit them locally; do not commit pay floors, blocklists, or other personal data to the shared repo.
+
 ### Manual install (step by step)
 
 Use this path if you want to set everything up by hand, or if the onboarding script fails. Full commands for Python, virtual environments, and config templates: **[docs/installation.md](docs/installation.md)**. Or run the onboarding script above instead.
@@ -116,7 +118,7 @@ After install, `qa-job` runs the scraper and `qa-job-triage` runs triage with `-
 | `config/ils_matrix.yaml` | Optional rubric for interview-likelihood points. [Guide →](docs/ils-matrix.md) |
 | `applications/skip_companies.txt` | Companies to always ignore (one per line) |
 
-Both YAML files come from `.example` templates. Git does not commit them; they stay on your machine only.
+These are **local copies** on your machine, not files tracked in Git. Onboarding (or manual install) creates them from `.example` templates; `.gitignore` keeps them out of version control so personal settings never get pushed to GitHub. Edit them in your editor on this computer. If you use Git, do not `git add` or commit them — even if Git shows them as untracked files.
 
 ---
 

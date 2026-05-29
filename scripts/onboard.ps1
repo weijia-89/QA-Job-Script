@@ -146,6 +146,7 @@ New-Item -ItemType Directory -Force -Path applications, jobspy\results | Out-Nul
 Copy-IfMissing "config\profile.example.yaml" "config\profile.yaml"
 Copy-IfMissing "config\ils_matrix.example.yaml" "config\ils_matrix.yaml"
 Copy-IfMissing "config\skip_companies.txt.example" "applications\skip_companies.txt"
+Write-Host "  These files stay on your machine; git will not upload them."
 
 Write-Step "5/5 — Customize your profile"
 Write-Host "  profile.yaml tells the tool where you live, what pay to require, and which skills to look for."

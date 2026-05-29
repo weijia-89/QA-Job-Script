@@ -1,6 +1,8 @@
 # Your profile (`config/profile.yaml`)
 
-Fill these in right after `./scripts/onboard.sh` (or `onboard.ps1` on Windows) copies `config/profile.example.yaml` to `config/profile.yaml`. This file is **gitignored** — it holds your geography, pay floors, stack keywords, and scrape settings.
+Fill these in right after `./scripts/onboard.sh` (or `onboard.ps1` on Windows) copies `config/profile.example.yaml` to `config/profile.yaml`.
+
+**Edit on your machine only — not in Git.** `config/profile.yaml`, `config/ils_matrix.yaml`, `applications/skip_companies.txt`, and similar paths are **local copies** listed in `.gitignore`. They hold personal data (geography, pay floors, blocklists, scrape settings). Git will not upload them to GitHub; change them in your project folder on this computer and do not commit them to the shared repo.
 
 Validate after edits:
 

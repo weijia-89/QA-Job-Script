@@ -7,6 +7,8 @@ Manual setup for macOS, Linux, and Windows. For the fastest path, use the onboar
 
 Onboarding copies config templates, installs dependencies, and prompts you to edit `config/profile.yaml` immediately. See [your-profile.md](your-profile.md) for a field-by-field guide.
 
+**Local settings only:** The manual steps below also copy `config/profile.yaml`, `config/ils_matrix.yaml`, and `applications/skip_companies.txt` from `.example` templates. Those files are **gitignored** — they exist on your computer for the tool to read; Git does not track or upload them. Edit them locally; do not commit personal pay floors, blocklists, or profile data to GitHub.
+
 For how this bundle relates to JobSpy and what it adds on top, see [About JobSpy](../README.md#about-jobspy) and [What this project does](../README.md#what-this-project-does) in the README.
 
 ### Public PyPI only (corporate `pip.conf`)
