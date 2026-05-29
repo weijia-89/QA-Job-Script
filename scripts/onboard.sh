@@ -40,6 +40,35 @@ run_profile_configure() {
   python3 scripts/configure_profile.py || warn "configure_profile.py exited with an error"
 }
 
+PROFILE_GUIDE="docs/your-profile.md"
+PROFILE_GUIDE_URL="https://github.com/weijia-89/QA-Job-Script/blob/main/docs/your-profile.md"
+
+open_profile_guide() {
+  echo "  Opening your profile guide in browser..."
+  local target url
+  if [[ -f "$PROFILE_GUIDE" ]]; then
+    target="$REPO_ROOT/$PROFILE_GUIDE"
+    url="file://$target"
+  else
+    target="$PROFILE_GUIDE_URL"
+    url="$PROFILE_GUIDE_URL"
+  fi
+  echo "  $url"
+  if [[ -f "$PROFILE_GUIDE" ]]; then
+    if command -v open >/dev/null 2>&1; then
+      open "$PROFILE_GUIDE" || true
+    elif command -v xdg-open >/dev/null 2>&1; then
+      xdg-open "$PROFILE_GUIDE" || true
+    fi
+  else
+    if command -v open >/dev/null 2>&1; then
+      open "$url" || true
+    elif command -v xdg-open >/dev/null 2>&1; then
+      xdg-open "$url" || true
+    fi
+  fi
+}
+
 open_doc() {
   local doc="$1"
   if [[ ! -f "$doc" ]]; then
@@ -48,6 +77,8 @@ open_doc() {
   fi
   if command -v open >/dev/null 2>&1; then
     open "$doc" || true
+  elif command -v xdg-open >/dev/null 2>&1; then
+    xdg-open "$doc" || true
   else
     local ed="${EDITOR:-${VISUAL:-}}"
     if [[ -n "$ed" ]]; then
@@ -130,10 +161,15 @@ fi
 step "3/5 — Install required packages"
 echo "  Downloading libraries listed in requirements.txt (JobSpy, YAML, etc.)."
 echo "  Installing from public PyPI (pypi.org), not your employer's private index."
-env -u PIP_INDEX_URL -u PIP_EXTRA_INDEX_URL \
-  "${PIP_CMD[@]}" install -r requirements.txt \
-  --index-url https://pypi.org/simple \
-  --trusted-host pypi.org
+if python3 scripts/check_onboard_deps.py --check-only; then
+  echo "  Dependencies already installed — skipping pip install"
+else
+  python3 scripts/check_onboard_deps.py || true
+  env -u PIP_INDEX_URL -u PIP_EXTRA_INDEX_URL \
+    "${PIP_CMD[@]}" install -r requirements.txt \
+    --index-url https://pypi.org/simple \
+    --trusted-host pypi.org
+fi
 
 step "4/5 — Copy starter settings (only if missing)"
 echo "  These are your personal config files — never overwritten if they already exist."
@@ -145,6 +181,7 @@ echo "  These files stay on your machine; git will not upload them."
 
 step "5/5 — Customize your profile"
 echo "  profile.yaml tells the tool where you live, what pay to require, and which skills to look for."
+open_profile_guide
 run_profile_configure
 open_profile_optional
 

@@ -26,6 +26,24 @@ DEFAULT_ILS_MATRIX = REPO_ROOT / "config" / "ils_matrix.yaml"
 ILS_EXAMPLE = REPO_ROOT / "config" / "ils_matrix.example.yaml"
 
 REMOTE_PREFERENCES = ("fully_remote", "hybrid_home_metro", "any_us_remote")
+REMOTE_PREFERENCE_OPTIONS: tuple[tuple[str, str], ...] = (
+    ("fully_remote", "Keep rows with clear US-remote language in the JD"),
+    (
+        "hybrid_home_metro",
+        "US-remote or hybrid/onsite only when JD + location match your home_metro.place_names",
+    ),
+    ("any_us_remote", "Broadest US filter; still blocks international location columns"),
+)
+TRACK_OPTIONS: tuple[tuple[str, str], ...] = (
+    ("A", "General QA/SDET Indeed + LinkedIn style queries"),
+    ("B", "Automation-focused query set"),
+    ("C", "Contract / staff-aug patterns"),
+    ("G", "Google Jobs"),
+    ("R", "Remotive board"),
+    ("GH", "Greenhouse company list"),
+    ("L", "Lever company list"),
+    ("AS", "Ashby company list"),
+)
 TRACK_ID_RE = re.compile(r"^[A-Z0-9]{1,3}$")
 
 
@@ -85,6 +103,80 @@ def _parse_comma_list(raw: str) -> list[str]:
     return [p for p in parts if p]
 
 
+def _print_choice_menu(
+    label: str,
+    options: tuple[tuple[str, str], ...],
+    *,
+    current: str | list[str] | None = None,
+    multi: bool = False,
+) -> None:
+    """Print numbered options with one-line descriptions."""
+    print()
+    print(f"  {label}")
+    if multi:
+        cur_set = {str(x).upper() for x in (current or [])}
+        for idx, (value, desc) in enumerate(options, start=1):
+            marker = " (enabled)" if value.upper() in cur_set else ""
+            print(f"    {idx}) {value}{marker} — {desc}")
+        print("  Pick by number or ID (comma-separated for multiple, Enter = keep current).")
+    else:
+        cur = str(current or "")
+        for idx, (value, desc) in enumerate(options, start=1):
+            marker = " (current)" if value == cur else ""
+            print(f"    {idx}) {value}{marker} — {desc}")
+        print("  Pick by number or type the value (Enter = keep current).")
+
+
+INVALID_CHOICE = object()
+
+
+def _resolve_choice(
+    entered: str,
+    options: tuple[tuple[str, str], ...],
+    *,
+    allow_multi: bool = False,
+) -> str | list[str] | None:
+    """
+    Resolve user input against options.
+
+    Returns None if empty (keep current), list[str] for multi, str for single,
+    or INVALID_CHOICE when input does not match.
+    """
+    raw = entered.strip()
+    if not raw:
+        return None
+
+    def _match_token(token: str) -> str | None:
+        if token.isdigit():
+            idx = int(token) - 1
+            if 0 <= idx < len(options):
+                return options[idx][0]
+            return None
+        lower = token.lower()
+        for value, _ in options:
+            if lower == value.lower():
+                return value
+        upper = token.upper()
+        if TRACK_ID_RE.match(upper):
+            return upper
+        return None
+
+    if allow_multi:
+        tokens = [t.strip() for t in re.split(r"[\s,]+", raw) if t.strip()]
+        resolved: list[str] = []
+        for token in tokens:
+            matched = _match_token(token)
+            if matched is None:
+                return INVALID_CHOICE  # type: ignore[return-value]
+            resolved.append(matched)
+        return resolved if resolved else INVALID_CHOICE  # type: ignore[return-value]
+
+    matched = _match_token(raw)
+    if matched is not None:
+        return matched
+    return INVALID_CHOICE  # type: ignore[return-value]
+
+
 def _prompt_line(
     label: str,
     description: str,
@@ -112,20 +204,22 @@ def _prompt_remote_preference(
 ) -> str:
     read = stdin or input
     allowed = ", ".join(REMOTE_PREFERENCES)
+    _print_choice_menu(
+        "remote_preference — How strictly to filter work arrangement (US-focused)",
+        REMOTE_PREFERENCE_OPTIONS,
+        current=current,
+    )
     while True:
-        entered = _prompt_line(
-            "remote_preference",
-            "How strictly to filter work arrangement (US-focused).",
-            current,
-            "hybrid_home_metro",
-            stdin=read,
-        )
-        if entered is None:
+        entered = read("  Enter value (Enter = keep current): ").strip()
+        if not entered:
             return current
-        choice = entered.strip().lower()
-        if choice in REMOTE_PREFERENCES:
-            return choice
-        print(f"    Invalid — choose one of: {allowed}")
+        resolved = _resolve_choice(entered, REMOTE_PREFERENCE_OPTIONS)
+        if resolved is INVALID_CHOICE:
+            print(f"    Invalid — pick 1–{len(REMOTE_PREFERENCE_OPTIONS)} or one of: {allowed}")
+            continue
+        if isinstance(resolved, str):
+            return resolved
+        return current
 
 
 def _prompt_int_field(
@@ -178,22 +272,32 @@ def _prompt_tracks(
     stdin: Callable[[str], str] | None = None,
 ) -> list[str]:
     read = stdin or input
-    entered = _prompt_line(
-        "tracks.enable",
-        "Which scrape channels to run (see docs/your-profile.md).",
-        [str(x).upper() for x in current],
-        "A or A, B",
-        stdin=read,
+    cur_upper = [str(x).upper() for x in current]
+    _print_choice_menu(
+        "tracks.enable — Which scrape channels to run",
+        TRACK_OPTIONS,
+        current=cur_upper,
+        multi=True,
     )
-    if entered is None:
+    print(f"    Current: {_format_current(cur_upper)}")
+    print("    Example: 1 or A or 1, 2 or A, B")
+    while True:
+        entered = read("  Enter value (Enter = keep current): ").strip()
+        if not entered:
+            return list(current)
+        resolved = _resolve_choice(entered, TRACK_OPTIONS, allow_multi=True)
+        if resolved is INVALID_CHOICE:
+            print("    Invalid — pick numbers/IDs from the list above.")
+            continue
+        if resolved is None:
+            return list(current)
+        if isinstance(resolved, list):
+            valid = [t for t in resolved if TRACK_ID_RE.match(t)]
+            if valid:
+                return valid
+            print("    No valid track IDs — try again.")
+            continue
         return list(current)
-    raw = entered.replace("[", "").replace("]", "")
-    tokens = [t.strip().upper() for t in re.split(r"[\s,]+", raw) if t.strip()]
-    valid = [t for t in tokens if TRACK_ID_RE.match(t)]
-    if not valid:
-        print("    No valid track IDs — keeping current.")
-        return list(current)
-    return valid
 
 
 def configure_profile_data(

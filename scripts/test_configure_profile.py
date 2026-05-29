@@ -35,8 +35,36 @@ def test_remote_preference_validation_rejects_invalid() -> None:
     assert result == "hybrid_home_metro"
 
 
+def test_remote_preference_pick_by_number() -> None:
+    result = cp._prompt_remote_preference("fully_remote", stdin=lambda _: "2")
+    assert result == "hybrid_home_metro"
+
+
 def test_remote_preference_enter_keeps_current() -> None:
     assert cp._prompt_remote_preference("any_us_remote", stdin=lambda _: "") == "any_us_remote"
+
+
+def test_resolve_choice_remote_by_number() -> None:
+    assert cp._resolve_choice("3", cp.REMOTE_PREFERENCE_OPTIONS) == "any_us_remote"
+
+
+def test_resolve_choice_tracks_multi() -> None:
+    assert cp._resolve_choice("1, 2", cp.TRACK_OPTIONS, allow_multi=True) == ["A", "B"]
+
+
+def test_print_remote_preference_menu_includes_all_options(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    cp._print_choice_menu(
+        "remote_preference",
+        cp.REMOTE_PREFERENCE_OPTIONS,
+        current="hybrid_home_metro",
+    )
+    out = capsys.readouterr().out
+    assert "fully_remote" in out
+    assert "hybrid_home_metro (current)" in out
+    assert "any_us_remote" in out
+    assert "1)" in out and "2)" in out and "3)" in out
 
 
 def test_yaml_roundtrip_preserves_structure(tmp_profile: Path) -> None:

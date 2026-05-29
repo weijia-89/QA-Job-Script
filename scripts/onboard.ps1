@@ -40,6 +40,32 @@ function Invoke-ProfileConfigure {
     }
 }
 
+$ProfileGuide = Join-Path $RepoRoot "docs\your-profile.md"
+$ProfileGuideUrl = "https://github.com/weijia-89/QA-Job-Script/blob/main/docs/your-profile.md"
+
+function Open-ProfileGuide {
+    Write-Host "  Opening your profile guide in browser..."
+    if (Test-Path -LiteralPath $ProfileGuide) {
+        $url = "file://$ProfileGuide"
+        Write-Host "  $url"
+        try {
+            Start-Process -FilePath $ProfileGuide
+        }
+        catch {
+            Write-Host "  (Could not open browser — read the file above)"
+        }
+    }
+    else {
+        Write-Host "  $ProfileGuideUrl"
+        try {
+            Start-Process -FilePath $ProfileGuideUrl
+        }
+        catch {
+            Write-Host "  (Could not open browser — visit URL above)"
+        }
+    }
+}
+
 function Open-Doc {
     param([string]$DocPath)
     if (-not (Test-Path -LiteralPath $DocPath)) {
@@ -124,11 +150,18 @@ if (Test-Path -LiteralPath $venvActivate) {
 Write-Step "3/5 — Install required packages"
 Write-Host "  Downloading libraries listed in requirements.txt (JobSpy, YAML, etc.)."
 Write-Host "  Installing from public PyPI (pypi.org), not your employer's private index."
-Remove-Item Env:PIP_INDEX_URL -ErrorAction SilentlyContinue
-Remove-Item Env:PIP_EXTRA_INDEX_URL -ErrorAction SilentlyContinue
-& @pip install -r requirements.txt `
-  --index-url https://pypi.org/simple `
-  --trusted-host pypi.org
+$depCheck = & python (Join-Path $RepoRoot "scripts\check_onboard_deps.py") --check-only
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "  Dependencies already installed — skipping pip install"
+}
+else {
+    & python (Join-Path $RepoRoot "scripts\check_onboard_deps.py")
+    Remove-Item Env:PIP_INDEX_URL -ErrorAction SilentlyContinue
+    Remove-Item Env:PIP_EXTRA_INDEX_URL -ErrorAction SilentlyContinue
+    & @pip install -r requirements.txt `
+      --index-url https://pypi.org/simple `
+      --trusted-host pypi.org
+}
 
 Write-Step "4/5 — Copy starter settings (only if missing)"
 Write-Host "  These are your personal config files — never overwritten if they already exist."
@@ -140,6 +173,7 @@ Write-Host "  These files stay on your machine; git will not upload them."
 
 Write-Step "5/5 — Customize your profile"
 Write-Host "  profile.yaml tells the tool where you live, what pay to require, and which skills to look for."
+Open-ProfileGuide
 Invoke-ProfileConfigure
 Open-ProfileOptional
 
