@@ -1,6 +1,5 @@
 # Copy to config/profile.yaml and edit (gitignored). Onboarding copies this for you.
-# Field-by-field guide: docs/your-profile.md
-# Scoring rubric (optional): docs/ils-matrix.md
+# First-run fields: docs/your-profile.md — full reference in comments below.
 
 owner: your-name
 
@@ -72,7 +71,7 @@ prescreen:
     max_years_mod: 8
     max_years_low: 8
 
-# Optional triage scoring — safe to leave defaults; see docs/ils-matrix.md
+# optional — see docs/ils-matrix.md
 ils:
   cold_floor: 45
   referral_warm_delta: -10
@@ -80,6 +79,7 @@ ils:
   matrix_file: config/ils_matrix.yaml
   company_overrides_file: config/company_ils_overrides.json
 
+# optional — see docs/ils-matrix.md
 referrals:
   status_file: applications/referral_status.txt
 
@@ -89,8 +89,10 @@ paths:
   results_dir: jobspy/results
   ops_rollup_dir: jobspy/results/ops_rollups
 
+# optional — see docs/your-profile.md (Later section) and README
 verified_remote_employers: []
 
+# optional — see docs/your-profile.md (Later section)
 review_companies:
   - crowdstrike
   - ifit solutions

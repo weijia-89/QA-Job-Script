@@ -25,19 +25,22 @@ function Copy-IfMissing([string]$Source, [string]$Dest) {
 
 function Write-ProfileChecklist {
     Write-Host ""
-    Write-Host "  Next: edit config\profile.yaml — your metro, pay floors, and skills."
+    Write-Host "  Next: edit config\profile.yaml — onboarding fields only."
     Write-Host "  Walkthrough: docs\your-profile.md"
     Write-Host ""
-    Write-Host "  Must set before first scrape:"
-    Write-Host "    • owner              — any label for you (logs only)"
-    Write-Host "    • remote_preference  — how strict about remote vs hybrid"
-    Write-Host "    • home_metro         — your area cities and ZIP"
-    Write-Host "    • comp               — minimum pay you will consider"
-    Write-Host "    • prescreen.stack_keywords — tools to count in each posting"
-    Write-Host "    • tracks.enable      — [A] alone is fine to start"
+    Write-Host "  Fill in before first scrape:"
+    Write-Host "    • owner                      — display name (logs only)"
+    Write-Host "    • remote_preference          — fully_remote | hybrid_home_metro | any_us_remote"
+    Write-Host "    • home_metro                 — name, zip_anchor, place_names"
+    Write-Host "    • silent_office_hubs         — skim defaults; remove your home metro if needed"
+    Write-Host "    • comp                       — min_ceiling, min_floor, hourly floor, gate2_floor_usd"
+    Write-Host "    • prescreen.stack_keywords   — tools to count in each posting"
+    Write-Host "    • prescreen.priority         — defaults usually fine (year caps)"
+    Write-Host "    • paths.skip_companies       — copied for you; add blocklist entries as you go"
+    Write-Host "    • tracks.enable              — [A] or [A, B] recommended to start"
     Write-Host ""
-    Write-Host "  Can wait until later:"
-    Write-Host "    • referrals, verified_remote_employers, review_companies, application index"
+    Write-Host "  Optional later (see docs\your-profile.md — Later section):"
+    Write-Host "    • referrals, verified_remote_employers, review_companies, application index, ILS"
 }
 
 function Open-Doc {
